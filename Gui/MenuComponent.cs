@@ -72,7 +72,7 @@ public class MenuComponent : IInputReceiver
     {
         if (menuContainer is MenuRoot)
             return ["Favourites", "Recent"];
-        if (menuContainer is MenuSection)
+        if (menuContainer is MenuItemWithSubmenu)
             return ["Back"];
         if (menuContainer is MenuCommand)
             return ["Run", "Back"];
@@ -124,11 +124,23 @@ public class MenuComponent : IInputReceiver
                 return;
             case ConsoleKey.Enter:
             case ConsoleKey.Spacebar:
-                string selectedKey = _activeSelection.SelectedKey;
-                IMenuItem selectedItem = _menuContainer.Sections
+                IMenuItem? selectedItem = _menuContainer.Sections
                     .SelectMany(s => s.Submenu)
-                    .FirstOrDefault(m => m.Name == selectedKey)
-                    ?? throw new InvalidOperationException("Selected item not found");
+                    .FirstOrDefault(m => m.Name == ActiveKey);
+                if (selectedItem is null)
+                {
+                    switch (ActiveKey)
+                    {
+                        case "Back":
+                            _parent.ExitMenu(out _);
+                            return;
+                        case "Run":
+                            _parent.ExecuteCommand();
+                            return;
+                        default:
+                            throw new NotImplementedException("Unknown navigation item");
+                    }
+                }
                 if (selectedItem is IMenuContainer submenu)
                     _parent.EnterMenu(submenu);
 #warning TODO

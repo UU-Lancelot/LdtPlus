@@ -42,6 +42,7 @@ public class Gui : IDisposable, IAsyncDisposable, IInputReceiver
     {
         _console.Add("error title", new Rule("Error"));
         _console.Add("error message", new Text(ex.Message));
+        _console.Show();
     }
 
     public void Dispose()

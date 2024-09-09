@@ -2,7 +2,6 @@
 using LdtPlus.Exceptions;
 using LdtPlus.Gui;
 
-Console.ReadKey(true);
 InputHandler inputHandler = new();
 using (Gui gui = new(inputHandler))
 {

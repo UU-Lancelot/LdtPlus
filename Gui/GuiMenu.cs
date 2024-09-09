@@ -11,6 +11,7 @@ public class GuiMenu
 
         _consoleOverride = new(consoleMain);
         _components = new();
+        _commandComponent = new(consoleMain);
         _executeCommand = false;
     }
 
@@ -18,6 +19,7 @@ public class GuiMenu
     private readonly MenuRoot _menuRoot;
     private readonly ConsoleOverride _consoleOverride;
     private Stack<MenuComponent> _components;
+    private CommandComponent _commandComponent;
     private bool _executeCommand;
 
     public string ShowAndGetCommand()
@@ -54,6 +56,10 @@ public class GuiMenu
         _consoleOverride.Push(menuComponent.MainFrame);
         _consoleOverride.Refresh();
 
+        // update command
+        if (previousMenu is not null)
+            _commandComponent.PushMenu(previousMenu);
+
         // input registration
         if (previousMenu is not null)
             _inputHandler.Unregister(previousMenu);
@@ -76,6 +82,9 @@ public class GuiMenu
             return;
         }
 
+        // update command
+        _commandComponent.PopMenu();
+
         // input registration
         _inputHandler.Unregister(previousMenu);
         _inputHandler.Register(currentMenu);
@@ -84,7 +93,7 @@ public class GuiMenu
 
     public void UpdateShowedCommand(string newValue)
     {
-        #warning TODO
+        _commandComponent.UpdateFilter(newValue);
     }
 
     public void ExecuteCommand()
@@ -94,6 +103,6 @@ public class GuiMenu
 
     private string ConstructCommand()
     {
-        return string.Join(" ", _components.Select(c => c.ActiveKey));
+        return _commandComponent.FullCommand;
     }
 }
