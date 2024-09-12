@@ -1,33 +1,37 @@
+using LdtPlus.Gui.Interfaces;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace LdtPlus.Gui;
-public class LoaderComponent : IDisposable
+internal class LoaderComponent : IComponent, IDisposable
 {
-    internal LoaderComponent(ConsoleMain visible)
+    internal LoaderComponent(IComponentContainer parent)
     {
-        _visible = visible;
+        _parent = parent;
         _key = Guid.NewGuid().ToString();
+        _mainFrame = new Text("Loading...");
     }
 
-    private readonly ConsoleMain _visible;
+    private readonly IComponentContainer _parent;
     private readonly string _key;
+    private Text _mainFrame;
 
-    internal void Show()
+    public IRenderable MainFrame => _mainFrame;
+
+    public void Rerender()
     {
-        _visible.Add(_key, new Text("Loading..."));
-        _visible.Show();
+        _parent.Update(_key, this);
     }
 
     public void Dispose()
     {
-        _visible.Remove(_key);
-        _visible.Show();
+        _parent.Remove(_key);
     }
 
-    internal static LoaderComponent ShowNew(ConsoleMain visible)
+    internal static LoaderComponent ShowNew(IComponentContainer parent)
     {
-        LoaderComponent loader = new(visible);
-        loader.Show();
+        LoaderComponent loader = new(parent);
+        loader.Rerender();
 
         return loader;
     }

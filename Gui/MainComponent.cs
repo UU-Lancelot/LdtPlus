@@ -1,12 +1,11 @@
+using LdtPlus.Gui.Interfaces;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 
 namespace LdtPlus.Gui;
-public class ConsoleMain : IDisposable, IAsyncDisposable
+public class MainComponent : IComponentContainer, IDisposable, IAsyncDisposable
 {
-    public ConsoleMain()
+    public MainComponent()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         _mainFrame = new Table
         {
             ShowHeaders = false,
@@ -14,33 +13,31 @@ public class ConsoleMain : IDisposable, IAsyncDisposable
         };
         _mainFrame.AddColumn(new TableColumn(string.Empty));
         _keys = [];
+        _cancellationTokenSource = new CancellationTokenSource();
+        _rerender = new TaskCompletionSource();
     }
 
-    private bool _rerender;
     private Table _mainFrame;
     private List<string> _keys;
-    private Task? _showTableTask;
     private CancellationTokenSource _cancellationTokenSource;
+    private TaskCompletionSource _rerender;
+    private Task? _showTableTask;
 
     #region Lifecycle
-    public ConsoleMain Start()
+    public MainComponent Start()
     {
         _showTableTask = Task.Run(() => AnsiConsole.Live(_mainFrame).Start(StartLive));
 
         return this;
     }
 
-    private void StartLive(LiveDisplayContext ctx)
+    private async void StartLive(LiveDisplayContext ctx)
     {
         while (!_cancellationTokenSource.IsCancellationRequested)
         {
-            Thread.Sleep(50);
-
-            if (_rerender)
-            {
-                _rerender = false;
-                ctx.Refresh();
-            }
+            await _rerender.Task;
+            _rerender = new TaskCompletionSource();
+            ctx.Refresh();
         }
     }
 
@@ -61,16 +58,16 @@ public class ConsoleMain : IDisposable, IAsyncDisposable
     #endregion
 
     #region Rendering
-    public void Add(string key, IRenderable item)
+    public void Add(string key, IComponent item)
     {
         if (_showTableTask is null)
             throw new InvalidOperationException("GuiVisible is not started");
 
         _keys.Add(key);
-        _mainFrame.AddRow(item);
+        _mainFrame.AddRow(item.MainFrame);
     }
 
-    public void Update(string key, IRenderable item)
+    public void Update(string key, IComponent item)
     {
         if (_showTableTask is null)
             throw new InvalidOperationException("GuiVisible is not started");
@@ -78,11 +75,11 @@ public class ConsoleMain : IDisposable, IAsyncDisposable
         int keyIndex = _keys.IndexOf(key);
         if (keyIndex == -1)
         {
-            // warning
+            Add(key, item);
             return;
         }
 
-        _mainFrame.Rows.Update(keyIndex, 0, item);
+        _mainFrame.Rows.Update(keyIndex, 0, item.MainFrame);
     }
 
     public void Remove(string key)
@@ -101,20 +98,15 @@ public class ConsoleMain : IDisposable, IAsyncDisposable
         _keys.RemoveAt(keyIndex);
     }
 
-    public void Clear()
+    public void Rerender()
     {
-        _mainFrame.Rows.Clear();
-    }
-
-    public void Show()
-    {
-        _rerender = true;
+        _rerender.SetResult();
     }
     #endregion
 
-    public static ConsoleMain StartNew()
+    public static MainComponent StartNew()
     {
-        return new ConsoleMain()
+        return new MainComponent()
             .Start();
     }
 }

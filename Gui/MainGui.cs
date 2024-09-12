@@ -1,36 +1,44 @@
 
 using LdtPlus.Exceptions;
+using LdtPlus.Gui.Interfaces;
+using LdtPlus.Gui.Tools;
 using LdtPlus.Menu;
-using Spectre.Console;
 
 namespace LdtPlus.Gui;
-public class Gui : IDisposable, IAsyncDisposable, IInputReceiver
+public class MainGui : IDisposable, IAsyncDisposable, IInputReceiver
 {
-    public Gui(InputHandler inputHandler)
+    public MainGui(InputHandler inputHandler)
     {
-        _console = ConsoleMain.StartNew();
+        _console = MainComponent.StartNew();
         _inputHandler = inputHandler;
 
         _inputHandler.Register(this);
     }
 
-    private readonly ConsoleMain _console;
+    private readonly MainComponent _console;
     private readonly InputHandler _inputHandler;
 
     public void ShowHeader()
     {
-        _console.Add("header", new Rule("LancelotDeploymentTool+"));
+        HeaderComponent header = new(_console);
+        header.Rerender();
     }
 
-    public LoaderComponent ShowLoader()
+    public IDisposable ShowLoader()
     {
         return LoaderComponent.ShowNew(_console);
     }
 
     public void UseMenu(MenuRoot menuStructure, out string command)
     {
-        GuiMenu menu = new(_console, _inputHandler, menuStructure);
-        command = menu.ShowAndGetCommand();
+        MenuPosition menuPosition = new(menuStructure);
+        CommandComponent commandComponent = new(_console, menuPosition);
+        commandComponent.Rerender();
+
+        MenuGui menu = new(_console, menuPosition);
+        menu.Show();
+
+        _inputHandler.WaitForInput();
     }
 
     public void UsePathInput(out string path)
@@ -40,9 +48,8 @@ public class Gui : IDisposable, IAsyncDisposable, IInputReceiver
 
     public void ShowError(Exception ex)
     {
-        _console.Add("error title", new Rule("Error"));
-        _console.Add("error message", new Text(ex.Message));
-        _console.Show();
+        ErrorComponent error = new(_console, ex.Message);
+        error.Rerender();
     }
 
     public void Dispose()

@@ -1,48 +1,46 @@
+using LdtPlus.Gui.Interfaces;
+using LdtPlus.Gui.Tools;
+using LdtPlus.Menu;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace LdtPlus.Gui;
-public class CommandComponent
+internal class CommandComponent : IComponent, IMenuEventReceiver
 {
-    public CommandComponent(ConsoleMain consoleMain)
+    public CommandComponent(IComponentContainer parent, MenuPosition menuPosition)
     {
-        _consoleMain = consoleMain;
-        _consoleKey = Guid.NewGuid().ToString();
-        _components = new();
-        _filter = string.Empty;
-        MainFrame = new(FullCommand);
-
-        _consoleMain.Add(_consoleKey, MainFrame);
+        _parent = parent;
+        _key = Guid.NewGuid().ToString();
+        _menuPosition = menuPosition;
+        _text = new Text(FullCommand);
     }
 
-    private readonly ConsoleMain _consoleMain;
-    private readonly string _consoleKey;
-    private Stack<MenuComponent> _components;
-    private string _filter;
+    private readonly IComponentContainer _parent;
+    private readonly string _key;
+    private MenuPosition _menuPosition;
+    private Text _text;
 
-    public Text MainFrame { get; private set; }
-    public string FullCommand => string.Join(" ", _components.Select(c => c.ActiveKey).Append(_filter).Prepend("ldt"));
+    public IRenderable MainFrame => _text;
+    public string FullCommand => string.Join(" ", _menuPosition.Path.Append(_menuPosition.Filter).Prepend("ldt"));
 
-    public void PushMenu(MenuComponent menuComponent)
+    public void Rerender()
     {
-        _components.Push(menuComponent);
-        Refresh();
+        _text = new(FullCommand);
+        _parent.Update(_key, this);
     }
 
-    public void PopMenu()
+    public void Enter(string key, IMenuContainer menu)
     {
-        _components.Pop();
-        Refresh();
+        Rerender();
+    }
+
+    public void Exit(IMenuContainer menu)
+    {
+        Rerender();
     }
 
     public void UpdateFilter(string filter)
     {
-        _filter = filter;
-        Refresh();
-    }
-
-    private void Refresh()
-    {
-        MainFrame = new Text(FullCommand);
-        _consoleMain.Update(_consoleKey, MainFrame);
+        Rerender();
     }
 }

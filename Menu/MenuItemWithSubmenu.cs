@@ -4,4 +4,7 @@ public record MenuItemWithSubmenu
     string Name,
     string Description,
     IEnumerable<MenuSection> Sections
-) : IMenuItem, IMenuContainer;
+) : IMenuItem, IMenuContainer
+{
+    public IEnumerable<string> Navigation => ["Back"];
+}

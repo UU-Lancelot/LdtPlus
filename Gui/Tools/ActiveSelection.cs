@@ -1,5 +1,5 @@
-namespace LdtPlus.Gui;
-public class ActiveSelection
+namespace LdtPlus.Gui.Tools;
+internal class ActiveSelection
 {
     public ActiveSelection(IEnumerable<IEnumerable<string>> options)
     {

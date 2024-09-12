@@ -1,4 +1,6 @@
-namespace LdtPlus.Gui;
+using LdtPlus.Gui.Interfaces;
+
+namespace LdtPlus.Gui.Tools;
 public class InputHandler
 {
     public InputHandler()

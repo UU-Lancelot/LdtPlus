@@ -1,16 +1,17 @@
 ﻿using LdtPlus.Config;
 using LdtPlus.Exceptions;
 using LdtPlus.Gui;
+using LdtPlus.Gui.Tools;
 
 InputHandler inputHandler = new();
-using (Gui gui = new(inputHandler))
+using (MainGui gui = new(inputHandler))
 {
     try
     {
         gui.ShowHeader();
 
         /// load configuration ///
-        using (LoaderComponent loader = gui.ShowLoader())
+        using (IDisposable loader = gui.ShowLoader())
         {
             #warning TODO: load configuration
             Thread.Sleep(200);
@@ -24,7 +25,7 @@ using (Gui gui = new(inputHandler))
 
             if (needCreateConfiguration)
             {
-                using (LoaderComponent loader = gui.ShowLoader())
+                using (IDisposable loader = gui.ShowLoader())
                 {
                     #warning TODO: create configuration
                     Thread.Sleep(200);
