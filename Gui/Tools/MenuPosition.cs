@@ -1,24 +1,26 @@
-using LdtPlus.Gui.Interfaces;
-using LdtPlus.Menu;
+using LdtPlus.MenuData;
 
 namespace LdtPlus.Gui.Tools;
-internal class MenuPosition
+public class MenuPosition
 {
     public MenuPosition(MenuRoot menuRoot)
     {
         _menuRoot = menuRoot;
         _currentPath = new();
-        _currentFilter = string.Empty;
-        _receivers = new();
+        _activeSelections = new();
+        Filter = string.Empty;
+
+        _activeSelections.Push(new ActiveSelection(GetOptions()));
     }
 
     private readonly MenuRoot _menuRoot;
     private Stack<string> _currentPath;
-    private string _currentFilter;
-    private List<IMenuEventReceiver> _receivers;
+    private readonly Stack<ActiveSelection> _activeSelections;
+
+    public ActiveSelection ActiveSelection => _activeSelections.Peek();
 
     public IEnumerable<string> Path => _currentPath;
-    public string Filter => _currentFilter;
+    public string Filter { get; private set; }
     public IMenuContainer CurrentMenu
     {
         get
@@ -43,63 +45,47 @@ internal class MenuPosition
             return currentMenu;
         }
     }
+    public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
+        .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
+        .Where(s => s.Submenu.Any());
+    public IEnumerable<string> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.StartsWith(Filter, ignoreCase: true, null));
 
-    public void RegisterForEvents(IMenuEventReceiver receiver)
+    public void EnterSelected()
     {
-        _receivers.Add(receiver);
+        _currentPath.Push(ActiveSelection.SelectedKey);
+        _activeSelections.Push(new ActiveSelection(GetOptions()));
+        Filter = string.Empty;
     }
-
-    public void UnregisterForEvents(IMenuEventReceiver receiver)
-    {
-        _receivers.Remove(receiver);
-    }
-
-    public void Enter(string key)
-    {
-        _currentPath.Push(key);
-        _currentFilter = string.Empty;
-
-        IMenuContainer menu = CurrentMenu;
-        foreach (var receiver in _receivers)
-        {
-            receiver.Enter(key, menu);
-        }
-    }
-
     public bool TryExit()
     {
         if (!_currentPath.TryPop(out _))
             return false;
 
-        _currentFilter = string.Empty;
+        Filter = string.Empty;
+        _activeSelections.Pop();
 
-        IMenuContainer menu = CurrentMenu;
-        foreach (var receiver in _receivers)
-        {
-            receiver.Exit(menu);
-        }
         return true;
     }
 
     public void FilterAdd(char c)
     {
-        _currentFilter += c;
-
-        foreach (var receiver in _receivers)
-        {
-            receiver.UpdateFilter(_currentFilter);
-        }
+        Filter += c;
     }
-    public void FilterRemoveLastChar()
+    public bool TryFilterRemoveLastChar()
     {
-        if (_currentFilter.Length == 0)
-            return;
+        if (!Filter.Any())
+            return false;
 
-        _currentFilter = _currentFilter[..^1];
+        Filter = Filter[..^1];
+        return true;
+    }
 
-        foreach (var receiver in _receivers)
-        {
-            receiver.UpdateFilter(_currentFilter);
-        }
+
+    private string[][] GetOptions()
+    {
+        return SectionsFiltered
+            .Select(s => s.Submenu.Select(i => i.Name).ToArray())
+            .Prepend(NavigationFiltered.ToArray())
+            .ToArray();
     }
 }

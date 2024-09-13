@@ -1,4 +1,4 @@
-namespace LdtPlus.Menu;
+namespace LdtPlus.MenuData;
 public record MenuItemWithSubmenu
 (
     string Name,
@@ -6,5 +6,6 @@ public record MenuItemWithSubmenu
     IEnumerable<MenuSection> Sections
 ) : IMenuItem, IMenuContainer
 {
+    public IEnumerable<string> ItemOptions => [];
     public IEnumerable<string> Navigation => ["Back"];
 }

@@ -1,50 +1,46 @@
-﻿using LdtPlus.Config;
-using LdtPlus.Exceptions;
+﻿using LdtPlus;
+using LdtPlus.Config;
 using LdtPlus.Gui;
-using LdtPlus.Gui.Tools;
+using LdtPlus.Menu;
 
-InputHandler inputHandler = new();
-using (MainGui gui = new(inputHandler))
+Console.ReadKey(true);
+await using (Gui gui = new())
 {
-    try
-    {
-        gui.ShowHeader();
+    ConfigIO config = new();
+    Menu menu = new(gui, config.Config.Menu);
 
-        /// load configuration ///
-        using (IDisposable loader = gui.ShowLoader())
+    // Get config
+    bool isConfigLoaded;
+    bool isExecutableFound;
+    using (gui.ShowLoader())
+    {
+        isConfigLoaded = config.TryLoadConfig();
+        isExecutableFound = config.TryFindExecutable();
+    }
+
+    if (!isExecutableFound)
+    {
+        config.LdtPath = menu.GetPath();
+    }
+
+    if (!isConfigLoaded)
+    {
+        using (gui.ShowLoader())
         {
-            #warning TODO: load configuration
-            Thread.Sleep(200);
+            config.CreateConfig();
         }
-
-        bool ldtFileExists = true;
-        bool needCreateConfiguration = false;
-        if (!ldtFileExists) // ldt file 
-        {
-            gui.UsePathInput(out string path);
-
-            if (needCreateConfiguration)
-            {
-                using (IDisposable loader = gui.ShowLoader())
-                {
-                    #warning TODO: create configuration
-                    Thread.Sleep(200);
-                }
-            }
-        }
-
-        /// show menu ///
-        gui.UseMenu(new ConfigData().Menu, out string command);
-
-        #warning TODO: execute command
     }
-    catch (ExitAppException)
+
+    // menu
+    Command command;
+    do
     {
-        return;
-    }
-    catch (Exception ex)
-    {
-        gui.ShowError(ex);
-        Console.ReadKey(true);
-    }
+        command = menu.GetCommand();
+        if (command == Command.Exit)
+            return;
+    } while (command != Command.Run);
+
+    // run
+    Executor executor = new();
+    executor.Run("TODO");
 }

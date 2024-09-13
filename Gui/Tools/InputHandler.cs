@@ -1,32 +1,39 @@
-using LdtPlus.Gui.Interfaces;
-
 namespace LdtPlus.Gui.Tools;
 public class InputHandler
 {
-    public InputHandler()
-    {
-        _receivers = new();
-    }
-
-    private readonly List<IInputReceiver> _receivers;
-    public void Register(IInputReceiver receiver)
-    {
-        _receivers.Add(receiver);
-    }
-
-    public void Unregister(IInputReceiver receiver)
-    {
-        _receivers.Remove(receiver);
-    }
-
-    public void WaitForInput()
+    public void WaitForInput(
+        Action? onSelect = null,
+        Action? onExit = null,
+        Action<ConsoleKey>? onMove = null,
+        Action<char>? onChar = null,
+        Action? onBackspace = null)
     {
         ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
-        foreach (IInputReceiver receiver in _receivers.Reverse<IInputReceiver>())
+        switch (keyInfo.Key)
         {
-            receiver.HandleInput(keyInfo, out bool passToNextReceiver);
-            if (!passToNextReceiver)
+            case ConsoleKey.Enter:
+            case ConsoleKey.Spacebar:
+                onSelect?.Invoke();
+                break;
+            case ConsoleKey.Escape:
+                onExit?.Invoke();
+                break;
+            case ConsoleKey.UpArrow:
+            case ConsoleKey.DownArrow:
+            case ConsoleKey.LeftArrow:
+            case ConsoleKey.RightArrow:
+                onMove?.Invoke(keyInfo.Key);
+                break;
+            case ConsoleKey.Backspace:
+                onBackspace?.Invoke();
+                break;
+            default:
+                // ignore invisible characters
+                if (char.IsControl(keyInfo.KeyChar) || char.IsWhiteSpace(keyInfo.KeyChar))
+                    break;
+
+                onChar?.Invoke(keyInfo.KeyChar);
                 break;
         }
     }

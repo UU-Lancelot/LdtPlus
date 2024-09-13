@@ -1,4 +1,4 @@
-// namespace LdtPlus.Menu;
+// namespace LdtPlus.MenuData;
 // public class MenuItemArgument : IMenuItem
 // {
 //     public required string Name { get; init; }

@@ -1,4 +1,4 @@
-using LdtPlus.Menu;
+using LdtPlus.MenuData;
 
 namespace LdtPlus.Config;
 public record ConfigData

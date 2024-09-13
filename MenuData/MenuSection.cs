@@ -1,4 +1,4 @@
-namespace LdtPlus.Menu;
+namespace LdtPlus.MenuData;
 public record MenuSection
 (
     string Title,

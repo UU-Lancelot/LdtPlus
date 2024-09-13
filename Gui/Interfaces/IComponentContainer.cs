@@ -1,7 +1,7 @@
 namespace LdtPlus.Gui.Interfaces;
 public interface IComponentContainer
 {
-    void Add(string key, IComponent component);
-    void Update(string key, IComponent component);
-    void Remove(string key);
+    void Add(IComponent component);
+    void Update(IComponent component);
+    void Remove(IComponent component);
 }

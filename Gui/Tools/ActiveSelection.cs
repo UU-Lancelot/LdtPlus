@@ -1,12 +1,9 @@
 namespace LdtPlus.Gui.Tools;
-internal class ActiveSelection
+public class ActiveSelection
 {
-    public ActiveSelection(IEnumerable<IEnumerable<string>> options)
+    public ActiveSelection(string[][] options)
     {
-        if (!options.Any() || !options.First().Any())
-            throw new ArgumentException("Options must not be empty.");
-
-        _options = options.Select(x => x.ToArray()).ToArray();
+        _options = options;
         _selectedRow = 0;
         _selectedColumn = 0;
         SelectedKey = string.Empty;
@@ -19,9 +16,9 @@ internal class ActiveSelection
 
     public string SelectedKey { get; private set; }
 
-    public void UpdateOptions(IEnumerable<IEnumerable<string>> options)
+    public void UpdateOptions(string[][] options)
     {
-        _options = options.Select(x => x.ToArray()).ToArray();
+        _options = options;
 
         if (TryFindKey(SelectedKey, out _selectedRow, out _selectedColumn))
             return;
