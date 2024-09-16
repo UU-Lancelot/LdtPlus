@@ -85,9 +85,9 @@ public class Menu
 
     private void ShowMenu()
     {
-        _gui.ShowCommand($"{_menuPosition.Path} {_menuPosition.Filter}")
-            .With()
-            .ShowMenu(_menuPosition);
+        _gui.Show(batch => batch
+            .ShowCommand($"{_menuPosition.Path} {_menuPosition.Filter}")
+            .ShowMenu(_menuPosition));
     }
 
 }

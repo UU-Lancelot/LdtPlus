@@ -36,12 +36,12 @@ internal class GuiBase : IComponentContainer, IDisposable, IAsyncDisposable
         while (!_cancellationTokenSource.IsCancellationRequested)
         {
             await _rerender.Task;
+            _rerender = new TaskCompletionSource();
 
             if (_cancellationTokenSource.IsCancellationRequested)
                 return;
 
             ctx.Refresh();
-            _rerender = new TaskCompletionSource();
         }
     }
 
@@ -71,8 +71,6 @@ internal class GuiBase : IComponentContainer, IDisposable, IAsyncDisposable
 
         _keys.Add(item.Key);
         _mainFrame.AddRow(item.MainFrame);
-
-        Rerender();
     }
 
     public void Update(IComponent item)
@@ -88,8 +86,6 @@ internal class GuiBase : IComponentContainer, IDisposable, IAsyncDisposable
         }
 
         _mainFrame.Rows.Update(keyIndex, 0, item.MainFrame);
-
-        Rerender();
     }
 
     public void Remove(IComponent item)
@@ -106,11 +102,9 @@ internal class GuiBase : IComponentContainer, IDisposable, IAsyncDisposable
 
         _mainFrame.Rows.RemoveAt(keyIndex);
         _keys.RemoveAt(keyIndex);
-
-        Rerender();
     }
 
-    private void Rerender()
+    public void Rerender()
     {
         if (!_rerender.Task.IsCompleted)
             _rerender.SetResult();

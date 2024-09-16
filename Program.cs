@@ -12,7 +12,7 @@ await using (Gui gui = new())
     // Get config
     bool isConfigLoaded;
     bool isExecutableFound;
-    using (gui.ShowLoader())
+    using (gui.UseLoader())
     {
         isConfigLoaded = config.TryLoadConfig();
         isExecutableFound = config.TryFindExecutable();
@@ -25,7 +25,7 @@ await using (Gui gui = new())
 
     if (!isConfigLoaded)
     {
-        using (gui.ShowLoader())
+        using (gui.UseLoader())
         {
             config.CreateConfig();
         }

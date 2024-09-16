@@ -17,7 +17,9 @@ internal class MenuComponent : IComponent, IDisposable
             Border = TableBorder.None,
         };
         _mainFrame.AddColumn(string.Empty);
-        Key = Guid.NewGuid().ToString();
+        Key = "menu";
+
+        UpdateVisible();
     }
 
     private readonly IComponentContainer _parent;
@@ -27,7 +29,7 @@ internal class MenuComponent : IComponent, IDisposable
     public IRenderable MainFrame => _mainFrame;
     public string Key { get; }
 
-    public void Rerender()
+    private void UpdateVisible()
     {
         // clear previous
         _mainFrame.Rows.Clear();
