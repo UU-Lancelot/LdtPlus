@@ -7,7 +7,7 @@ using Spectre.Console.Rendering;
 namespace LdtPlus.Gui;
 internal class MenuComponent : IComponent, IDisposable
 {
-    public MenuComponent(IComponentContainer parent, MenuPosition menu)
+    public MenuComponent(IComponentContainer parent, MenuPosition menu, string? key = null)
     {
         _parent = parent;
         _menu = menu;
@@ -17,7 +17,7 @@ internal class MenuComponent : IComponent, IDisposable
             Border = TableBorder.None,
         };
         _mainFrame.AddColumn(string.Empty);
-        Key = "menu";
+        Key = key ?? "menu";
 
         UpdateVisible();
     }

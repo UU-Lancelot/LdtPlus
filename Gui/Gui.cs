@@ -8,8 +8,8 @@ public class Gui : IDisposable, IAsyncDisposable
         _guiBase = new GuiBase();
         _showedComponents = Array.Empty<IComponent>();
 
-        _guiBase.Start();
         _guiBase.Add(new TitleComponent(_guiBase));
+        _guiBase.Start();
     }
 
     private GuiBase _guiBase;

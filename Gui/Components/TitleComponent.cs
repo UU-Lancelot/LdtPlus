@@ -5,10 +5,10 @@ using Spectre.Console.Rendering;
 namespace LdtPlus.Gui;
 internal class TitleComponent : IComponent, IDisposable
 {
-    internal TitleComponent(IComponentContainer parent)
+    internal TitleComponent(IComponentContainer parent, string? key = null)
     {
         _parent = parent;
-        Key = "title";
+        Key = key ?? "title";
         MainFrame = new Rule("LancelotDeployTool+");
     }
 

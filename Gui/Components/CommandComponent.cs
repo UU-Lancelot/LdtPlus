@@ -5,10 +5,10 @@ using Spectre.Console.Rendering;
 namespace LdtPlus.Gui;
 internal class CommandComponent : IComponent, IDisposable
 {
-    internal CommandComponent(IComponentContainer parent, string commandText)
+    internal CommandComponent(IComponentContainer parent, string commandText, string? key = null)
     {
         _parent = parent;
-        Key = "command";
+        Key = key ?? "command";
         MainFrame = new Text(commandText);
     }
 
