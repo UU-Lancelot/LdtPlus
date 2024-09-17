@@ -38,25 +38,26 @@ internal class MenuComponent : IComponent, IDisposable
         if (_menu.NavigationFiltered.Any())
         {
             Grid navigation = new();
-            foreach (string _ in _menu.NavigationFiltered)
+            foreach (IMenuNav _ in _menu.NavigationFiltered)
             {
                 navigation.AddColumn().AddColumn(); // select, nav
             }
-            navigation.AddRow(_menu.NavigationFiltered.SelectMany<string, string>(n => [n == _menu.ActiveSelection.SelectedKey ? ">" : " ", n]).ToArray());
+            navigation.AddRow(_menu.NavigationFiltered.SelectMany<IMenuNav, string>(n => [n.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", n.Name]).ToArray());
             _mainFrame.AddRow(navigation);
         }
 
         // add all sections
         foreach (MenuSection section in _menu.SectionsFiltered)
         {
-            Text sectionTitle = new(section.Title);
-            _mainFrame.AddRow(sectionTitle);
+            _mainFrame.AddEmptyRow();
+            _mainFrame.AddRow(section.Title);
+            _mainFrame.AddRow(new Rule());
 
             Grid sectionGrid = new();
             sectionGrid.AddColumn().AddColumn().AddColumn(); // select, name, description
-            foreach (IMenuItem item in section.Submenu)
+            foreach (IMenuRow item in section.Submenu)
             {
-                sectionGrid.AddRow([item.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", item.Name, item.Description]);
+                sectionGrid.AddRow([item.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", Markup.Escape(item.Name), Markup.Escape(item.Description)]);
             }
             _mainFrame.AddRow(sectionGrid);
         }

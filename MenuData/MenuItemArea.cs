@@ -1,11 +1,11 @@
 namespace LdtPlus.MenuData;
-public record MenuItemWithSubmenu
+public record MenuItemArea
 (
     string Name,
     string Description,
     IEnumerable<MenuSection> Sections
-) : IMenuItem, IMenuContainer
+) : IMenuRow, IMenuContainer
 {
     public IEnumerable<string> ItemOptions => [];
-    public IEnumerable<string> Navigation => ["Back"];
+    public IEnumerable<IMenuNav> Navigation => [new MenuNavBack()];
 }

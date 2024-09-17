@@ -28,7 +28,7 @@ public class MenuPosition
             IMenuContainer currentMenu = _menuRoot;
             foreach (var key in _currentPath)
             {
-                IMenuItem? menuItem = currentMenu.Sections
+                IMenuRow? menuItem = currentMenu.Sections
                     .SelectMany(s => s.Submenu)
                     .Where(i => i.Name == key)
                     .FirstOrDefault();
@@ -45,10 +45,12 @@ public class MenuPosition
             return currentMenu;
         }
     }
+    public IMenuItem? SelectedItem => (IMenuItem?)CurrentMenu.Navigation.FirstOrDefault(n => n.Name == ActiveSelection.SelectedKey) 
+        ?? CurrentMenu.Sections.SelectMany(s => s.Submenu).FirstOrDefault(i => i.Name == ActiveSelection.SelectedKey);
     public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
         .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
         .Where(s => s.Submenu.Any());
-    public IEnumerable<string> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.StartsWith(Filter, ignoreCase: true, null));
+    public IEnumerable<IMenuNav> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.Name.StartsWith(Filter, ignoreCase: true, null));
 
     public void EnterSelected()
     {
@@ -84,8 +86,8 @@ public class MenuPosition
     private string[][] GetOptions()
     {
         return SectionsFiltered
-            .SelectMany(s => s.Submenu.Select<IMenuItem, string[]>(i => [i.Name]))
-            .Prepend(NavigationFiltered.ToArray())
+            .SelectMany(s => s.Submenu.Select<IMenuRow, string[]>(i => [i.Name]))
+            .Prepend(NavigationFiltered.Select(n => n.Name).ToArray())
             .ToArray();
     }
 }

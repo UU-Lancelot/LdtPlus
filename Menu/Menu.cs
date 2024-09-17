@@ -36,6 +36,9 @@ public class Menu
     #region Input handlers
     private void OnSelect()
     {
+        if (TryHandleNavigation())
+            return;
+
         _menuPosition.EnterSelected();
         ShowMenu();
     }
@@ -43,7 +46,7 @@ public class Menu
     private void OnExit()
     {
         if (!_menuPosition.TryExit())
-            _result = Command.Exit;
+            SetResult(Command.Exit);
 
         ShowMenu();
     }
@@ -83,11 +86,33 @@ public class Menu
     }
     #endregion
 
+    private bool TryHandleNavigation()
+    {
+        IMenuItem? selectedItem = _menuPosition.SelectedItem;
+        if (selectedItem is null)
+            return false;
+
+        if (_menuPosition.SelectedItem is not IMenuNav nav)
+            return false;
+        
+        if (nav.TryNavigate(_menuPosition, SetResult))
+        {
+            ShowMenu();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void SetResult(Command command)
+    {
+        _result = command;
+    }
+
     private void ShowMenu()
     {
         _gui.Show(batch => batch
             .ShowCommand($"{string.Join(" ", _menuPosition.Path)} {_menuPosition.Filter}")
             .ShowMenu(_menuPosition));
     }
-
 }
