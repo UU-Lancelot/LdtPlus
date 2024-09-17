@@ -9,7 +9,7 @@ internal class CommandComponent : IComponent, IDisposable
     {
         _parent = parent;
         Key = key ?? "command";
-        MainFrame = new Text(commandText);
+        MainFrame = new Text($"Command: ldt {commandText}");
     }
 
     private readonly IComponentContainer _parent;

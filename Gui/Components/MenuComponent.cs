@@ -60,8 +60,6 @@ internal class MenuComponent : IComponent, IDisposable
             }
             _mainFrame.AddRow(sectionGrid);
         }
-
-        _parent.Update(this);
     }
 
     public void Dispose()

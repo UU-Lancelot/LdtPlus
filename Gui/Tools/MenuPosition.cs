@@ -84,7 +84,7 @@ public class MenuPosition
     private string[][] GetOptions()
     {
         return SectionsFiltered
-            .Select(s => s.Submenu.Select(i => i.Name).ToArray())
+            .SelectMany(s => s.Submenu.Select<IMenuItem, string[]>(i => [i.Name]))
             .Prepend(NavigationFiltered.ToArray())
             .ToArray();
     }
