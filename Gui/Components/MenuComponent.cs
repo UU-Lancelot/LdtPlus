@@ -38,11 +38,11 @@ internal class MenuComponent : IComponent, IDisposable
         if (_menu.NavigationFiltered.Any())
         {
             Grid navigation = new();
-            foreach (IMenuNav _ in _menu.NavigationFiltered)
+            foreach (IMenuItem _ in _menu.NavigationFiltered)
             {
                 navigation.AddColumn().AddColumn(); // select, nav
             }
-            navigation.AddRow(_menu.NavigationFiltered.SelectMany<IMenuNav, string>(n => [n.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", n.Name]).ToArray());
+            navigation.AddRow(_menu.NavigationFiltered.SelectMany<IMenuItem, string>(n => [n.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", n.Name]).ToArray());
             _mainFrame.AddRow(navigation);
         }
 

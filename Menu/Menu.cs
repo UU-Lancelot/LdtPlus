@@ -14,14 +14,14 @@ public class Menu
     private readonly Gui.Gui _gui;
     private readonly InputHandler _input;
     private readonly MenuPosition _menuPosition;
-    private Command? _result;
+    private (Command command, string? parameter)? _result;
 
     public string GetPath()
     {
         throw new NotImplementedException();
     }
 
-    public Command GetCommand()
+    public Command GetCommand(out string? parameter)
     {
         ShowMenu();
 
@@ -30,16 +30,17 @@ public class Menu
             _input.WaitForInput(OnSelect, OnExit, OnMove, OnChar, OnBackspace);
         }
 
-        return _result.Value;
+        parameter = _result.Value.parameter;
+        return _result.Value.command;
     }
 
     #region Input handlers
     private void OnSelect()
     {
-        if (TryHandleNavigation())
+        if (_menuPosition.SelectedItem is null)
             return;
 
-        _menuPosition.EnterSelected();
+        _menuPosition.SelectedItem.OnSelect(_menuPosition, SetResult);
         ShowMenu();
     }
 
@@ -86,33 +87,15 @@ public class Menu
     }
     #endregion
 
-    private bool TryHandleNavigation()
+    private void SetResult(Command command, string? parameter = null)
     {
-        IMenuItem? selectedItem = _menuPosition.SelectedItem;
-        if (selectedItem is null)
-            return false;
-
-        if (_menuPosition.SelectedItem is not IMenuNav nav)
-            return false;
-        
-        if (nav.TryNavigate(_menuPosition, SetResult))
-        {
-            ShowMenu();
-            return true;
-        }
-
-        return false;
-    }
-
-    private void SetResult(Command command)
-    {
-        _result = command;
+        _result = (command, parameter);
     }
 
     private void ShowMenu()
     {
         _gui.Show(batch => batch
-            .ShowCommand($"{string.Join(" ", _menuPosition.Path)} {_menuPosition.Filter}")
+            .ShowCommand($"{string.Join(" ", _menuPosition.Path.Select(p => p.Split(',')[0]))} {_menuPosition.Filter}")
             .ShowMenu(_menuPosition));
     }
 }

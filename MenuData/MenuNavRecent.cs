@@ -2,15 +2,16 @@ using LdtPlus.Gui.Tools;
 using LdtPlus.Menu;
 
 namespace LdtPlus.MenuData;
-public class MenuNavRecent : IMenuNav, IMenuContainer
+public record MenuNavRecent(
+    IEnumerable<IMenuRow> Recent
+) : IMenuItem, IMenuContainer
 {
     public string Name => "Recent";
-    public IEnumerable<IMenuRow> Recent { get; init; } = Enumerable.Empty<IMenuRow>();
     public IEnumerable<MenuSection> Sections => Enumerable.Repeat(new MenuSection("Recent", Recent), 1);
-    public IEnumerable<IMenuNav> Navigation => [new MenuNavBack()];
+    public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
 
-    public bool TryNavigate(MenuPosition position, Action<Command> setCommand)
+    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        return false;
+        position.EnterSelected();
     }
 }

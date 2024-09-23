@@ -1,3 +1,6 @@
+using LdtPlus.Gui.Tools;
+using LdtPlus.Menu;
+
 namespace LdtPlus.MenuData;
 public record MenuItemArea
 (
@@ -6,6 +9,11 @@ public record MenuItemArea
     IEnumerable<MenuSection> Sections
 ) : IMenuRow, IMenuContainer
 {
-    public IEnumerable<string> ItemOptions => [];
-    public IEnumerable<IMenuNav> Navigation => [new MenuNavBack()];
+    public IEnumerable<IMenuItem> ItemOptions => [];
+    public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
+
+    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
+    {
+        position.EnterSelected();
+    }
 }

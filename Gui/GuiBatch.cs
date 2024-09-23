@@ -21,6 +21,14 @@ public class GuiBatch
         return this;
     }
 
+    public GuiBatch ShowInput(string message, string input)
+    {
+        InputComponent component = new(_guiBase, message, input);
+        _components.Add(component);
+
+        return this;
+    }
+
     public GuiBatch ShowPath()
     {
         return this;

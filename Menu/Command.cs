@@ -2,6 +2,8 @@ namespace LdtPlus.Menu;
 public enum Command
 {
     Run,
-    Favourites,
+    FavouriteAdd,
+    FavouriteRename,
+    FavouriteDelete,
     Exit,
 }

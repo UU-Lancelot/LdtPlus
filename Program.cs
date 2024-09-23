@@ -33,11 +33,33 @@ await using (Gui gui = new())
 
     // menu
     Command command;
+    string? parameter;
     do
     {
-        command = menu.GetCommand();
-        if (command == Command.Exit)
-            return;
+        command = menu.GetCommand(out parameter);
+        switch (command)
+        {
+            case Command.Exit:
+                return;
+            case Command.FavouriteAdd:
+                if (parameter is null || !Input.TryGetResult(gui, "Favourite name", out string? name))
+                    continue;
+
+                config.AddFavourite(name, parameter);
+                break;
+            case Command.FavouriteRename:
+                if (parameter is null || !Input.TryGetResult(gui, "New name", out string? newName))
+                    continue;
+
+                config.RenameFavourite(parameter, newName);
+                break;
+            case Command.FavouriteDelete:
+                if (parameter is null)
+                    continue;
+
+                config.DeleteFavourite(parameter);
+                break;
+        }
     } while (command != Command.Run);
 
     // run

@@ -1,8 +1,12 @@
 namespace LdtPlus.MenuData;
-public record MenuRoot
-(
-    IEnumerable<MenuSection> Sections
-) : IMenuContainer
+public record MenuRoot : IMenuContainer
 {
-    public IEnumerable<IMenuNav> Navigation => [new MenuNavFavourites(), new MenuNavRecent()];
+    public MenuRoot(IEnumerable<MenuSection> sections, IEnumerable<IMenuRow> favourites, IEnumerable<IMenuRow> recent)
+    {
+        Sections = sections;
+        Navigation = [new MenuNavFavourites(favourites), new MenuNavRecent(recent)];
+    }
+
+    public IEnumerable<MenuSection> Sections { get; }
+    public IEnumerable<IMenuItem> Navigation { get; }
 }

@@ -23,4 +23,24 @@ public class ConfigIO
     {
 
     }
+
+    public void AddRecent(string command)
+    {
+
+    }
+
+    public void AddFavourite(string name, string command)
+    {
+
+    }
+
+    public void RenameFavourite(string name, string newName)
+    {
+
+    }
+
+    public void DeleteFavourite(string name)
+    {
+
+    }
 }

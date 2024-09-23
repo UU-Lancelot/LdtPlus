@@ -2,15 +2,16 @@ using LdtPlus.Gui.Tools;
 using LdtPlus.Menu;
 
 namespace LdtPlus.MenuData;
-public class MenuNavFavourites : IMenuNav, IMenuContainer
+public record MenuNavFavourites(
+    IEnumerable<IMenuRow> Favourites
+) : IMenuItem, IMenuContainer
 {
     public string Name => "Favourites";
-    public IEnumerable<IMenuRow> Arguments { get; init; } = Enumerable.Empty<IMenuRow>();
-    public IEnumerable<MenuSection> Sections => Enumerable.Empty<MenuSection>();
-    public IEnumerable<IMenuNav> Navigation => [new MenuNavBack()];
+    public IEnumerable<MenuSection> Sections => Enumerable.Repeat(new MenuSection("Favourites", Favourites), 1);
+    public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
 
-    public bool TryNavigate(MenuPosition position, Action<Command> setCommand)
+    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        return false;
+        position.EnterSelected();
     }
 }

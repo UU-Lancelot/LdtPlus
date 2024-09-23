@@ -35,11 +35,10 @@ public class MenuPosition
 
                 if (menuItem is not null && menuItem is IMenuContainer menuContainer)
                     currentMenu = menuContainer;
+                else if (currentMenu.Navigation.FirstOrDefault(n => n.Name == key) is IMenuContainer navContainer)
+                    currentMenu = navContainer;
                 else
-                {
-#warning TODO: warn about invalid path
-                    break;
-                }
+                    throw new InvalidOperationException($"Invalid path: {string.Join(" ",_currentPath)}");
             }
 
             return currentMenu;
@@ -50,7 +49,7 @@ public class MenuPosition
     public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
         .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
         .Where(s => s.Submenu.Any());
-    public IEnumerable<IMenuNav> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.Name.StartsWith(Filter, ignoreCase: true, null));
+    public IEnumerable<IMenuItem> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.Name.StartsWith(Filter, ignoreCase: true, null));
 
     public void EnterSelected()
     {

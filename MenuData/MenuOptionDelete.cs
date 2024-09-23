@@ -2,12 +2,12 @@ using LdtPlus.Gui.Tools;
 using LdtPlus.Menu;
 
 namespace LdtPlus.MenuData;
-public record MenuNavRun : IMenuItem
+public record MenuOptionDelete : IMenuItem
 {
-    public string Name => "Run";
+    public string Name => "Delete";
 
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        setCommand(Command.Run, string.Join(" ", position.Path));
+        setCommand(Command.FavouriteDelete, position.ActiveSelection.SelectedKey);
     }
 }
