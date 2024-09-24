@@ -9,8 +9,8 @@ public record MenuItemArea
     IEnumerable<MenuSection> Sections
 ) : IMenuRow, IMenuContainer
 {
-    public IEnumerable<IMenuItem> ItemOptions => [];
     public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
+    public IEnumerable<IMenuItem> ItemOptions => Enumerable.Empty<IMenuItem>();
 
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {

@@ -23,15 +23,24 @@ public class Menu
 
     public Command GetCommand(out string? parameter)
     {
+        // show
         ShowMenu();
 
+        // wait for result
         while (_result == null)
         {
             _input.WaitForInput(OnSelect, OnExit, OnMove, OnChar, OnBackspace);
         }
 
+        // get result
         parameter = _result.Value.parameter;
-        return _result.Value.command;
+        var resultCommand = _result.Value.command;
+
+        // reset
+        _result = null;
+
+        // return
+        return resultCommand;
     }
 
     #region Input handlers

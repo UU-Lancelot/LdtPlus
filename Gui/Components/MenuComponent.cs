@@ -55,9 +55,24 @@ internal class MenuComponent : IComponent, IDisposable
 
             Grid sectionGrid = new();
             sectionGrid.AddColumn().AddColumn().AddColumn(); // select, name, description
+            foreach (IMenuItem _ in _menu.CurrentMenu.ItemOptions)
+            {
+                sectionGrid.AddColumn().AddColumn(); // select, name
+            }
             foreach (IMenuRow item in section.Submenu)
             {
-                sectionGrid.AddRow([item.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ", Markup.Escape(item.Name), Markup.Escape(item.Description)]);
+                List<string> row = new List<string>
+                {
+                    item.Name == _menu.ActiveSelection.SelectedKey ? ">" : " ",
+                    Markup.Escape(item.Name),
+                    Markup.Escape(item.Description),
+                };
+                foreach (IMenuItem option in _menu.CurrentMenu.ItemOptions)
+                {
+                    row.Add($"{item.Name}_{option.Name}" == _menu.ActiveSelection.SelectedKey ? ">" : " ");
+                    row.Add(option.Name);
+                }
+                sectionGrid.AddRow(row.ToArray());
             }
             _mainFrame.AddRow(sectionGrid);
         }

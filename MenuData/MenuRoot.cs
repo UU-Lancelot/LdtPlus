@@ -9,4 +9,5 @@ public record MenuRoot : IMenuContainer
 
     public IEnumerable<MenuSection> Sections { get; }
     public IEnumerable<IMenuItem> Navigation { get; }
+    public IEnumerable<IMenuItem> ItemOptions => Enumerable.Empty<IMenuItem>();
 }

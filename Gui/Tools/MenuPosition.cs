@@ -44,8 +44,13 @@ public class MenuPosition
             return currentMenu;
         }
     }
-    public IMenuItem? SelectedItem => (IMenuItem?)CurrentMenu.Navigation.FirstOrDefault(n => n.Name == ActiveSelection.SelectedKey) 
-        ?? CurrentMenu.Sections.SelectMany(s => s.Submenu).FirstOrDefault(i => i.Name == ActiveSelection.SelectedKey);
+    public IMenuItem? SelectedItem => CurrentMenu.Navigation.FirstOrDefault(n => n.Name == ActiveSelection.SelectedKey)
+        ?? CurrentMenu.Sections.SelectMany(s => s.Submenu).FirstOrDefault(i => i.Name == ActiveSelection.SelectedKey)
+        ?? CurrentMenu.Sections
+            .SelectMany(s => s.Submenu) // all menu items
+            .SelectMany(i => CurrentMenu.ItemOptions, (i, o) => (i, o)) // cartesian product
+            .FirstOrDefault(pair => $"{pair.i.Name}_{pair.o.Name}" == ActiveSelection.SelectedKey)
+            .o;
     public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
         .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
         .Where(s => s.Submenu.Any());
@@ -85,7 +90,7 @@ public class MenuPosition
     private string[][] GetOptions()
     {
         return SectionsFiltered
-            .SelectMany(s => s.Submenu.Select<IMenuRow, string[]>(i => [i.Name]))
+            .SelectMany(s => s.Submenu.Select(i => CurrentMenu.ItemOptions.Select(o => $"{i.Name}_{o.Name}").Prepend(i.Name).ToArray()))
             .Prepend(NavigationFiltered.Select(n => n.Name).ToArray())
             .ToArray();
     }

@@ -42,6 +42,7 @@ public class Gui : IDisposable, IAsyncDisposable
         {
             _guiBase.Update(component);
         }
+        _showedComponents = components.ToArray();
         _guiBase.Rerender();
 
         return this;

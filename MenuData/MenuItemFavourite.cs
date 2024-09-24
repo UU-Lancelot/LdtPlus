@@ -9,8 +9,6 @@ public record MenuItemFavourite(
 {
     public string Description => string.Empty;
 
-    public IEnumerable<IMenuItem> ItemOptions => [new MenuOptionRename(), new MenuOptionDelete()];
-
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
         setCommand(Menu.Command.Run, Command);

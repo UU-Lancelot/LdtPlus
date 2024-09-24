@@ -3,7 +3,6 @@ using LdtPlus.Config;
 using LdtPlus.Gui;
 using LdtPlus.Menu;
 
-Console.ReadKey(true);
 await using (Gui gui = new())
 {
     ConfigIO config = new();
