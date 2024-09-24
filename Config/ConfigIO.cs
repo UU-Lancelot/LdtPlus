@@ -26,21 +26,28 @@ public class ConfigIO
 
     public void AddRecent(string command)
     {
+        Config.Recent.Insert(0, new MenuData.MenuItemRecent(command));
 
+        if (Config.Recent.Count > 100)
+            Config.Recent.RemoveAt(Config.Recent.Count - 1);
     }
 
     public void AddFavourite(string name, string command)
     {
-
+        Config.Favourites.Add(new MenuData.MenuItemFavourite(name, command));
     }
 
     public void RenameFavourite(string name, string newName)
     {
-
+        int favouriteIndex = Config.Favourites.FindIndex(f => f.Name == name);
+        if (favouriteIndex >= 0)
+            Config.Favourites[favouriteIndex] = new MenuData.MenuItemFavourite(newName, Config.Favourites[favouriteIndex].Command);
     }
 
     public void DeleteFavourite(string name)
     {
-
+        int favouriteIndex = Config.Favourites.FindIndex(f => f.Name == name);
+        if (favouriteIndex >= 0)
+            Config.Favourites.RemoveAt(favouriteIndex);
     }
 }

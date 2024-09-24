@@ -8,6 +8,8 @@ public record MenuOptionAdd : IMenuItem
 
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        setCommand(Command.FavouriteAdd, position.ActiveSelection.SelectedKey);
+        var separatorIndex = position.ActiveSelection.SelectedKey.LastIndexOf('~');
+        var itemName = position.ActiveSelection.SelectedKey.Substring(0, separatorIndex);
+        setCommand(Command.FavouriteAdd, itemName);
     }
 }

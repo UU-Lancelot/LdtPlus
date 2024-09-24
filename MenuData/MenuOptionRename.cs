@@ -8,6 +8,8 @@ public record MenuOptionRename : IMenuItem
 
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        setCommand(Command.FavouriteRename, position.ActiveSelection.SelectedKey);
+        var separatorIndex = position.ActiveSelection.SelectedKey.LastIndexOf('~');
+        var itemName = position.ActiveSelection.SelectedKey.Substring(0, separatorIndex);
+        setCommand(Command.FavouriteRename, itemName);
     }
 }

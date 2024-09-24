@@ -45,21 +45,25 @@ await using (Gui gui = new())
                     continue;
 
                 config.AddFavourite(name, parameter);
+                menu.RefreshMenu(config.Config.Menu);
                 break;
             case Command.FavouriteRename:
                 if (parameter is null || !Input.TryGetResult(gui, "New name", out string? newName))
                     continue;
 
                 config.RenameFavourite(parameter, newName);
+                menu.RefreshMenu(config.Config.Menu);
                 break;
             case Command.FavouriteDelete:
                 if (parameter is null)
                     continue;
 
                 config.DeleteFavourite(parameter);
+                menu.RefreshMenu(config.Config.Menu);
                 break;
         }
-    } while (command != Command.Run);
+    } while (command != Command.Run || parameter is null);
+    config.AddRecent(parameter);
 
     // run
     Executor executor = new();

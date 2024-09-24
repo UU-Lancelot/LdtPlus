@@ -69,7 +69,7 @@ internal class MenuComponent : IComponent, IDisposable
                 };
                 foreach (IMenuItem option in _menu.CurrentMenu.ItemOptions)
                 {
-                    row.Add($"{item.Name}_{option.Name}" == _menu.ActiveSelection.SelectedKey ? ">" : " ");
+                    row.Add($"{item.Name}~{option.Name}" == _menu.ActiveSelection.SelectedKey ? ">" : " ");
                     row.Add(option.Name);
                 }
                 sectionGrid.AddRow(row.ToArray());

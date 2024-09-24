@@ -49,7 +49,7 @@ public class MenuPosition
         ?? CurrentMenu.Sections
             .SelectMany(s => s.Submenu) // all menu items
             .SelectMany(i => CurrentMenu.ItemOptions, (i, o) => (i, o)) // cartesian product
-            .FirstOrDefault(pair => $"{pair.i.Name}_{pair.o.Name}" == ActiveSelection.SelectedKey)
+            .FirstOrDefault(pair => $"{pair.i.Name}~{pair.o.Name}" == ActiveSelection.SelectedKey)
             .o;
     public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
         .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
@@ -90,7 +90,7 @@ public class MenuPosition
     private string[][] GetOptions()
     {
         return SectionsFiltered
-            .SelectMany(s => s.Submenu.Select(i => CurrentMenu.ItemOptions.Select(o => $"{i.Name}_{o.Name}").Prepend(i.Name).ToArray()))
+            .SelectMany(s => s.Submenu.Select(i => CurrentMenu.ItemOptions.Select(o => $"{i.Name}~{o.Name}").Prepend(i.Name).ToArray()))
             .Prepend(NavigationFiltered.Select(n => n.Name).ToArray())
             .ToArray();
     }

@@ -8,6 +8,8 @@ public record MenuOptionDelete : IMenuItem
 
     public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
     {
-        setCommand(Command.FavouriteDelete, position.ActiveSelection.SelectedKey);
+        var separatorIndex = position.ActiveSelection.SelectedKey.LastIndexOf('~');
+        var itemName = position.ActiveSelection.SelectedKey.Substring(0, separatorIndex);
+        setCommand(Command.FavouriteDelete, itemName);
     }
 }

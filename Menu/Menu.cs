@@ -13,7 +13,7 @@ public class Menu
 
     private readonly Gui.Gui _gui;
     private readonly InputHandler _input;
-    private readonly MenuPosition _menuPosition;
+    private MenuPosition _menuPosition;
     private (Command command, string? parameter)? _result;
 
     public string GetPath()
@@ -41,6 +41,11 @@ public class Menu
 
         // return
         return resultCommand;
+    }
+
+    public void RefreshMenu(MenuRoot menu)
+    {
+        _menuPosition = new(menu);
     }
 
     #region Input handlers
