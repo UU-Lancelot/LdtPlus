@@ -6,7 +6,6 @@ using LdtPlus.Menu;
 await using (Gui gui = new())
 {
     ConfigIO config = new();
-    Menu menu = new(gui, config.Config.Menu);
 
     // Get config
     bool isConfigLoaded;
@@ -19,7 +18,7 @@ await using (Gui gui = new())
 
     if (!isExecutableFound)
     {
-        config.LdtPath = menu.GetPath();
+        // config.LdtPath = menu.GetPath();
     }
 
     if (!isConfigLoaded)
@@ -31,6 +30,7 @@ await using (Gui gui = new())
     }
 
     // menu
+    Menu menu = new(gui, config.Config.Menu);
     Command command;
     string? parameter;
     do

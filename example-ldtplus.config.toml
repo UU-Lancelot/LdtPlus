@@ -1,0 +1,52 @@
+ldt_path = 'C:\Users\Samuel\devtools\LancelotDeploymentTool\LancelotDeploymentTool.exe'
+ldt_version = '1.3.1.1149'
+
+[[sections]]
+title = "available areas of use:"
+  [[sections.submenu]]
+  name = "build"
+  description = "[area] management of installation packages preparation"
+    [[sections.submenu.sections]]
+    title = "available commands of 'build' area:"
+      [[sections.submenu.sections.submenu]]
+      name = "config"
+      description = "[command] launches a wizard to assist in creating the Builder.Config.toml file"
+      [[sections.submenu.sections.submenu]]
+      name = "package"
+      description = "[command] builds an installation package based on the provided Builder.Config.toml file"
+  [[sections.submenu]]
+  name = "configs"
+  description = "[area] management and manipulation with Lancelot configuration files"
+    [[sections.submenu.sections]]
+    title = "available commands of 'configs' area:"
+      [[sections.submenu.sections.submenu]]
+      name = "apply-template"
+      description = "[command] applies the template configuration(s) to the base file (e.g. EnifConfig.xml)"
+      [[sections.submenu.sections.submenu]]
+      name = "app-params-trim-xpath"
+      description = "[command] creates default project application.params.toml file from a product file."
+[[sections]]
+title = "tool configuration and management:"
+  [[sections.submenu]]
+  name = "auth, authentication"
+  description = "[area] management of stored tokens and credentials"
+    [[sections.submenu.sections]]
+    title = "available commands of 'authentication' area:"
+      [[sections.submenu.sections.submenu]]
+      name = "get-token"
+      description = "[command] displays the token for the provided authentication provider or URI"
+      [[sections.submenu.sections.submenu]]
+      name = "store-credentials"
+      description = "[command] encrypts and stores the user-entered credentials (location: %USERPROFILE%\\.ldt\\.<provider>-credentials)"
+  [[sections.submenu]]
+  name = "version"
+  description = "[command] displays information about the LancelotDeploymentTool version"
+
+[[favourites]]
+name = 'deploy etrm DB'
+command = 'ldt deploy db -d local-etrm -m Deploy -i C:\Users\Samuel\Source\uu\lancelot\server-dotnet\build\Etrm-Server\PackageResources\DbScripts\mssql'
+
+[history]
+recent = [
+  'ldt deploy db -d local-etrm -m Deploy -i C:\Users\Samuel\Source\uu\lancelot\server-dotnet\build\Etrm-Server\PackageResources\DbScripts\mssql'
+]
