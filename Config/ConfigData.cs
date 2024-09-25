@@ -12,6 +12,39 @@ public record ConfigData(
 {
     public MenuRoot Menu => new(Sections, Favourites, Recent);
 
+    #region update
+    public void AddRecent(string command)
+    {
+        Recent.Insert(0, new MenuItemRecent(command));
+
+        if (Recent.Count > 100)
+            Recent.RemoveAt(Recent.Count - 1);
+    }
+
+    public void AddFavourite(string name, string command)
+    {
+        Favourites.Add(new MenuItemFavourite(name, command));
+    }
+
+    public void RenameFavourite(string name, string newName)
+    {
+        int favouriteIndex = Favourites.FindIndex(f => f.Name == name);
+        if (favouriteIndex < 0)
+            return;
+
+        Favourites[favouriteIndex] = new MenuItemFavourite(newName, Favourites[favouriteIndex].Command);
+    }
+
+    public void DeleteFavourite(string name)
+    {
+        int favouriteIndex = Favourites.FindIndex(f => f.Name == name);
+        if (favouriteIndex < 0)
+            return;
+
+        Favourites.RemoveAt(favouriteIndex);
+    }
+    #endregion
+
     #region save
     public ConfigRaw ToRaw()
     {

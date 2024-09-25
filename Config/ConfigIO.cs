@@ -1,102 +1,87 @@
+using System.Diagnostics.CodeAnalysis;
 using LdtPlus.Config.RawData;
-using LdtPlus.MenuData;
 using Tomlyn;
 
 namespace LdtPlus.Config;
 public class ConfigIO
 {
-    public string? LdtPath { get; set; }
-    public ConfigData Config => _config ?? throw new Exception("Config is not created yet");
-
-    private ConfigData? _config;
-
-    public bool TryLoadConfig()
+    public ConfigData? TryLoadConfig()
     {
         try
         {
             // get config file
-            string ldtPlusConfigPath = GetPath();
+            string ldtPlusConfigPath = GetConfigPath();
             if (!File.Exists(ldtPlusConfigPath))
-                return false;
+                return null;
 
             // parse config file
             string configString = File.ReadAllText(ldtPlusConfigPath);
             ConfigRaw rawConfig = Toml.ToModel<ConfigRaw>(configString);
 
             // create structure
-            _config = ConfigData.FromRaw(rawConfig);
-
-            return true;
+            return ConfigData.FromRaw(rawConfig);
         }
         catch (Exception)
         {
-            return false;
+            return null;
         }
     }
 
-    public bool TryFindExecutable()
+    public string? TryFindExecutable(ConfigData? data)
     {
-#warning TODO: TryFindExecutable
-        return true;
+        // config path
+        if (data is not null && File.Exists(data.LdtPath))
+            return data.LdtPath;
+
+        // exe path
+        string? exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+        string? exeDir = Path.GetDirectoryName(exePath);
+        if (exeDir is not null && DirContainsLdt(exeDir, out string? ldtPath))
+            return ldtPath;
+
+        // current dir
+        string currentDir = Environment.CurrentDirectory;
+        if (DirContainsLdt(currentDir, out ldtPath))
+            return ldtPath;
+
+        return null;
     }
 
-    public void CreateConfig()
+    public ConfigData CreateConfig(Executor executor)
     {
 #warning TODO: CreateConfig
-
+        throw new NotImplementedException();
     }
 
-    public void AddRecent(string command)
-    {
-        Config.Recent.Insert(0, new MenuItemRecent(command));
-
-        if (Config.Recent.Count > 100)
-            Config.Recent.RemoveAt(Config.Recent.Count - 1);
-
-        SaveConfig();
-    }
-
-    public void AddFavourite(string name, string command)
-    {
-        Config.Favourites.Add(new MenuItemFavourite(name, command));
-        SaveConfig();
-    }
-
-    public void RenameFavourite(string name, string newName)
-    {
-        int favouriteIndex = Config.Favourites.FindIndex(f => f.Name == name);
-        if (favouriteIndex < 0)
-            return;
-
-        Config.Favourites[favouriteIndex] = new MenuItemFavourite(newName, Config.Favourites[favouriteIndex].Command);
-        SaveConfig();
-    }
-
-    public void DeleteFavourite(string name)
-    {
-        int favouriteIndex = Config.Favourites.FindIndex(f => f.Name == name);
-        if (favouriteIndex < 0)
-            return;
-
-        Config.Favourites.RemoveAt(favouriteIndex);
-        SaveConfig();
-    }
-
-    private void SaveConfig()
+    public void SaveConfig(ConfigData data)
     {
         // get content
-        ConfigRaw rawConfig = Config.ToRaw();
+        ConfigRaw rawConfig = data.ToRaw();
         string configString = Toml.FromModel(rawConfig);
 
         // save
-        string ldtPlusConfigPath = GetPath();
+        string ldtPlusConfigPath = GetConfigPath();
         File.WriteAllText(ldtPlusConfigPath, configString);
     }
 
-    private string GetPath()
+    private string GetConfigPath()
     {
         string homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string ldtPlusConfigPath = Path.Combine(homeDir, ".ldt", "ldtplus.config.toml");
         return ldtPlusConfigPath;
+    }
+
+    private bool DirContainsLdt(string dir, [MaybeNullWhen(returnValue: false)] out string ldtPath)
+    {
+        string[] ldtFileNames = ["ldt.exe", "LancelotDeploymentTool.exe"];
+        foreach (string ldtFileName in ldtFileNames)
+        {
+            ldtPath = Path.Combine(dir, ldtFileName);
+            if (File.Exists(ldtPath))
+                return true;
+        }
+
+        ldtPath = null;
+        return false;
     }
 }

@@ -5,32 +5,30 @@ using LdtPlus.Menu;
 
 await using (Gui gui = new())
 {
-    ConfigIO config = new();
+    ConfigIO configIO = new();
 
     // Get config
-    bool isConfigLoaded;
-    bool isExecutableFound;
+    ConfigData? config = null;
+    string? path = null;
     using (gui.UseLoader())
     {
-        isConfigLoaded = config.TryLoadConfig();
-        isExecutableFound = config.TryFindExecutable();
+        config = configIO.TryLoadConfig();
+        path = configIO.TryFindExecutable(config);
     }
 
-    if (!isExecutableFound)
-    {
-        // config.LdtPath = menu.GetPath();
-    }
+    path ??= "aa"; // menu.GetPath();
 
-    if (!isConfigLoaded)
+    if (config is null)
     {
         using (gui.UseLoader())
         {
-            config.CreateConfig();
+            Executor executorForConfig = new(path);
+            config = configIO.CreateConfig(executorForConfig);
         }
     }
 
     // menu
-    Menu menu = new(gui, config.Config.Menu);
+    Menu menu = new(gui, config.Menu);
     Command command;
     string? parameter;
     do
@@ -45,27 +43,31 @@ await using (Gui gui = new())
                     continue;
 
                 config.AddFavourite(name, parameter);
-                menu.RefreshMenu(config.Config.Menu);
+                configIO.SaveConfig(config);
+                menu.RefreshMenu(config.Menu);
                 break;
             case Command.FavouriteRename:
                 if (parameter is null || !Input.TryGetResult(gui, "New name", out string? newName))
                     continue;
 
                 config.RenameFavourite(parameter, newName);
-                menu.RefreshMenu(config.Config.Menu);
+                configIO.SaveConfig(config);
+                menu.RefreshMenu(config.Menu);
                 break;
             case Command.FavouriteDelete:
                 if (parameter is null)
                     continue;
 
                 config.DeleteFavourite(parameter);
-                menu.RefreshMenu(config.Config.Menu);
+                configIO.SaveConfig(config);
+                menu.RefreshMenu(config.Menu);
                 break;
         }
     } while (command != Command.Run || parameter is null);
     config.AddRecent(parameter);
+    configIO.SaveConfig(config);
 
     // run
-    Executor executor = new();
+    Executor executor = new(path);
     executor.Run("TODO");
 }
