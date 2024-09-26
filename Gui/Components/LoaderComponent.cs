@@ -5,11 +5,11 @@ using Spectre.Console.Rendering;
 namespace LdtPlus.Gui;
 internal class LoaderComponent : IComponent, IDisposable
 {
-    internal LoaderComponent(IComponentContainer parent, string? key = null)
+    internal LoaderComponent(IComponentContainer parent, string text, string? key = null)
     {
         _parent = parent;
         Key = key ?? "loader";
-        MainFrame = new Text("Loading...");
+        MainFrame = new Text(text);
     }
 
     private readonly IComponentContainer _parent;

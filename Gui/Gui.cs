@@ -8,16 +8,39 @@ public class Gui : IDisposable, IAsyncDisposable
         _guiBase = new GuiBase();
         _showedComponents = Array.Empty<IComponent>();
 
-        _guiBase.Add(new TitleComponent(_guiBase));
+        Init();
         _guiBase.Start();
     }
 
     private GuiBase _guiBase;
     private IComponent[] _showedComponents;
 
-    public IDisposable UseLoader()
+    public Gui Init()
     {
-        LoaderComponent loader = new(_guiBase);
+        _guiBase.Update(new TitleComponent(_guiBase));
+
+        if (_guiBase.IsRunning)
+            _guiBase.Rerender();
+
+        return this;
+    }
+
+    public Gui Clear()
+    {
+        foreach (IComponent component in _showedComponents)
+        {
+            _guiBase.Remove(component);
+        }
+
+        _showedComponents = Array.Empty<IComponent>();
+        _guiBase.Rerender();
+
+        return this;
+    }
+
+    public IDisposable UseLoader(string text = "Loading...")
+    {
+        LoaderComponent loader = new(_guiBase, text);
         _guiBase.Add(loader);
         _guiBase.Rerender();
 

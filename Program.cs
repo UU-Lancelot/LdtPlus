@@ -16,14 +16,14 @@ await using (Gui gui = new())
         path = configIO.TryFindExecutable(config);
     }
 
-    path ??= "aa"; // menu.GetPath();
+    path ??= @"C:\Users\Samuel\devtools\LancelotDeploymentTool\LancelotDeploymentTool.exe"; // menu.GetPath();
 
     if (config is null)
     {
-        using (gui.UseLoader())
+        using (gui.UseLoader("Creating config..."))
         {
-            Executor executorForConfig = new(path);
-            config = configIO.CreateConfig(executorForConfig);
+            config = ConfigBuilder.CreateConfig(path);
+            configIO.SaveConfig(config);
         }
     }
 
@@ -68,6 +68,13 @@ await using (Gui gui = new())
     configIO.SaveConfig(config);
 
     // run
+    gui.Clear();
     Executor executor = new(path);
-    executor.Run("TODO");
+    executor.Run(parameter);
+
+    if (parameter == "update")
+    {
+        gui.Init();
+        #warning TODO: Update config
+    }
 }

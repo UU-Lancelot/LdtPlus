@@ -24,6 +24,8 @@ internal class GuiBase : IComponentContainer, IDisposable, IAsyncDisposable
     private TaskCompletionSource _rerender;
     private Task? _showTableTask;
 
+    public bool IsRunning => _showTableTask is not null;
+
     #region Lifecycle
     public GuiBase Start()
     {

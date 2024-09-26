@@ -5,6 +5,7 @@ namespace LdtPlus.Config;
 public record ConfigData(
     string LdtPath,
     string LdtVersion,
+    string LdtBookkitUrl,
     IEnumerable<MenuSection> Sections,
     List<MenuItemFavourite> Favourites,
     List<MenuItemRecent> Recent
@@ -15,6 +16,7 @@ public record ConfigData(
     #region update
     public void AddRecent(string command)
     {
+        Recent.RemoveAll(i => i.Name == command);
         Recent.Insert(0, new MenuItemRecent(command));
 
         if (Recent.Count > 100)
@@ -52,6 +54,7 @@ public record ConfigData(
         {
             LdtPath = LdtPath,
             LdtVersion = LdtVersion,
+            LdtBookkitUrl = LdtBookkitUrl,
             Sections = Sections.Select(Create).ToList(),
             Favourites = Favourites.Select(Create).ToList(),
             History = Create(Recent),
@@ -97,11 +100,12 @@ public record ConfigData(
     {
         string ldtPath = raw.LdtPath ?? throw new MissingMemberException(nameof(ConfigRaw.LdtPath));
         string ldtVersion = raw.LdtVersion ?? throw new MissingMemberException(nameof(ConfigRaw.LdtVersion));
+        string ldtBookkitUrl = raw.LdtBookkitUrl ?? throw new MissingMemberException(nameof(ConfigRaw.LdtBookkitUrl));
         MenuSection[] sections = raw.Sections.Select(ValidateAndCreate).ToArray();
         List<MenuItemFavourite> favourites = raw.Favourites.Select(ValidateAndCreate).ToList();
         List<MenuItemRecent> recent = raw.History?.Recent.Select(ValidateAndCreate).ToList() ?? new();
 
-        return new ConfigData(ldtPath, ldtVersion, sections, favourites, recent);
+        return new ConfigData(ldtPath, ldtVersion, ldtBookkitUrl, sections, favourites, recent);
     }
 
     private static MenuSection ValidateAndCreate(ConfigRawSection section)

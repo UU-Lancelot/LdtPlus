@@ -47,12 +47,6 @@ public class ConfigIO
         return null;
     }
 
-    public ConfigData CreateConfig(Executor executor)
-    {
-#warning TODO: CreateConfig
-        throw new NotImplementedException();
-    }
-
     public void SaveConfig(ConfigData data)
     {
         // get content
