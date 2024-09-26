@@ -68,13 +68,11 @@ await using (Gui gui = new())
     configIO.SaveConfig(config);
 
     // run
-    gui.Clear();
     Executor executor = new(path);
-    executor.Run(parameter);
+    executor.Run(gui, parameter);
 
     if (parameter == "update")
     {
-        gui.Init();
         #warning TODO: Update config
     }
 }

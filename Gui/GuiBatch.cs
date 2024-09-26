@@ -46,4 +46,12 @@ public class GuiBatch
     {
         return this;
     }
+
+    public GuiBatch ShowStream(Stream stream)
+    {
+        StreamComponent component = new(_guiBase, stream);
+        _components.Add(component);
+
+        return this;
+    }
 }

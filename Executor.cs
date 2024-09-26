@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace LdtPlus;
 public class Executor
 {
@@ -8,32 +10,34 @@ public class Executor
 
     private readonly string _ldtPath;
 
-    public void Run(string command)
+    public void Run(Gui.Gui gui, string command)
     {
-        using (System.Diagnostics.Process process = new System.Diagnostics.Process())
+        using (Process process = new Process())
         {
             process.StartInfo.FileName = _ldtPath;
             process.StartInfo.Arguments = command;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.CreateNoWindow = true; //not diplay a windows
 
             process.Start();
-            process.StandardOutput.BaseStream.CopyTo(Console.OpenStandardOutput()); //The output result
+            gui.Show(b => b
+                .ShowStream(process.StandardOutput.BaseStream)); //The output result
+                #warning TODO: Show error stream
             process.WaitForExit();
         }
     }
 
     public string RunAndGetOutput(string command)
     {
-        using (System.Diagnostics.Process process = new System.Diagnostics.Process())
+        using (Process process = new Process())
         {
             process.StartInfo.FileName = _ldtPath;
             process.StartInfo.Arguments = command;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.CreateNoWindow = true; //not diplay a windows
 
             process.Start();
