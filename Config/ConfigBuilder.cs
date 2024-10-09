@@ -84,6 +84,7 @@ public class ConfigBuilder
             return new MenuItemArea(name, description, submenu);
         }
 
+#warning TODO: arguments
         if (description.StartsWith("[command]"))
             return new MenuItemCommand(name, description);
 

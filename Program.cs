@@ -3,6 +3,7 @@ using LdtPlus.Config;
 using LdtPlus.Gui;
 using LdtPlus.Menu;
 
+// Console.ReadKey(true);
 await using (Gui gui = new())
 {
     ConfigIO configIO = new();
@@ -16,7 +17,24 @@ await using (Gui gui = new())
         path = configIO.TryFindExecutable(config);
     }
 
-    path ??= @"C:\Users\Samuel\devtools\LancelotDeploymentTool\LancelotDeploymentTool.exe"; // menu.GetPath();
+    if (path is null)
+    {
+        string currentDir = Environment.CurrentDirectory;
+        PathInput pathMenu = new(gui, currentDir);
+        Command pathCommand = pathMenu.GetCommand(out string? pathParameter);
+        switch (pathCommand)
+        {
+            case Command.Exit:
+                return;
+            case Command.Run:
+                path = pathParameter;
+                break;
+        }
+
+        // should not happen, just remove warning
+        if (path is null)
+            return;
+    }
 
     if (config is null)
     {
@@ -73,6 +91,6 @@ await using (Gui gui = new())
 
     if (parameter == "update")
     {
-        #warning TODO: Update config
+#warning TODO: Update config
     }
 }

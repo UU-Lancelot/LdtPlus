@@ -29,8 +29,11 @@ public class GuiBatch
         return this;
     }
 
-    public GuiBatch ShowPath()
+    public GuiBatch ShowPath(string path)
     {
+        PathComponent component = new(_guiBase, path);
+        _components.Add(component);
+
         return this;
     }
 
@@ -39,11 +42,6 @@ public class GuiBatch
         MenuComponent component = new(_guiBase, menu);
         _components.Add(component);
 
-        return this;
-    }
-
-    public GuiBatch ShowPathInput()
-    {
         return this;
     }
 

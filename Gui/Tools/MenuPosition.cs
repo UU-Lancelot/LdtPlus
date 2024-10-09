@@ -3,7 +3,7 @@ using LdtPlus.MenuData;
 namespace LdtPlus.Gui.Tools;
 public class MenuPosition
 {
-    public MenuPosition(MenuRoot menuRoot)
+    public MenuPosition(IMenuContainer menuRoot)
     {
         _menuRoot = menuRoot;
         _currentPath = new();
@@ -13,20 +13,20 @@ public class MenuPosition
         _activeSelections.Push(new ActiveSelection(GetOptions()));
     }
 
-    private readonly MenuRoot _menuRoot;
+    private readonly IMenuContainer _menuRoot;
     private Stack<string> _currentPath;
     private readonly Stack<ActiveSelection> _activeSelections;
 
     public ActiveSelection ActiveSelection => _activeSelections.Peek();
 
-    public IEnumerable<string> Path => _currentPath;
+    public IEnumerable<string> Path => _currentPath.Reverse();
     public string Filter { get; private set; }
     public IMenuContainer CurrentMenu
     {
         get
         {
             IMenuContainer currentMenu = _menuRoot;
-            foreach (var key in _currentPath)
+            foreach (var key in Path)
             {
                 IMenuRow? menuItem = currentMenu.Sections
                     .SelectMany(s => s.Submenu)
@@ -38,7 +38,7 @@ public class MenuPosition
                 else if (currentMenu.Navigation.FirstOrDefault(n => n.Name == key) is IMenuContainer navContainer)
                     currentMenu = navContainer;
                 else
-                    throw new InvalidOperationException($"Invalid path: {string.Join(" ",_currentPath)}");
+                    throw new InvalidOperationException($"Invalid path: {string.Join(" ", Path)}");
             }
 
             return currentMenu;
@@ -61,6 +61,19 @@ public class MenuPosition
         _currentPath.Push(ActiveSelection.SelectedKey);
         _activeSelections.Push(new ActiveSelection(GetOptions()));
         Filter = string.Empty;
+    }
+    public void EnterKey(string key)
+    {
+        // get current options
+        ActiveSelection current = _activeSelections.Peek();
+        string[][] options = GetOptions();
+
+        // filter only single option
+        current.UpdateOptions([[key]]);
+        EnterSelected();
+
+        // restore options
+        current.UpdateOptions(options);
     }
     public bool TryExit()
     {
@@ -89,8 +102,9 @@ public class MenuPosition
 
     private string[][] GetOptions()
     {
+        IMenuContainer currentMenu = CurrentMenu;
         return SectionsFiltered
-            .SelectMany(s => s.Submenu.Select(i => CurrentMenu.ItemOptions.Select(o => $"{i.Name}~{o.Name}").Prepend(i.Name).ToArray()))
+            .SelectMany(s => s.Submenu.Select(i => currentMenu.ItemOptions.Select(o => $"{i.Name}~{o.Name}").Prepend(i.Name).ToArray()))
             .Prepend(NavigationFiltered.Select(n => n.Name).ToArray())
             .ToArray();
     }

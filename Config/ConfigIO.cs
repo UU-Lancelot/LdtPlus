@@ -44,6 +44,9 @@ public class ConfigIO
         if (DirContainsLdt(currentDir, out ldtPath))
             return ldtPath;
 
+        // PATH env
+        #warning TODO: implement PATH env search
+
         return null;
     }
 

@@ -10,16 +10,17 @@ public class Menu
         _input = new();
         _menuPosition = new(menu);
     }
-
-    private readonly Gui.Gui _gui;
-    private readonly InputHandler _input;
-    private MenuPosition _menuPosition;
-    private (Command command, string? parameter)? _result;
-
-    public string GetPath()
+    public Menu(Gui.Gui gui, MenuPosition menuPosition)
     {
-        throw new NotImplementedException();
+        _gui = gui;
+        _input = new();
+        _menuPosition = menuPosition;
     }
+
+    protected readonly Gui.Gui _gui;
+    protected readonly InputHandler _input;
+    protected MenuPosition _menuPosition;
+    protected (Command command, string? parameter)? _result;
 
     public Command GetCommand(out string? parameter)
     {
@@ -27,7 +28,7 @@ public class Menu
         ShowMenu();
 
         // wait for result
-        while (_result == null)
+        while (_result is null)
         {
             _input.WaitForInput(OnSelect, OnExit, OnMove, OnChar, OnBackspace);
         }
@@ -106,7 +107,7 @@ public class Menu
         _result = (command, parameter);
     }
 
-    private void ShowMenu()
+    protected virtual void ShowMenu()
     {
         _gui.Show(batch => batch
             .ShowCommand($"{string.Join(" ", _menuPosition.Path.Select(p => p.Split(',')[0]))} {_menuPosition.Filter}")
