@@ -59,8 +59,9 @@ public class MenuPosition
     public void EnterSelected()
     {
         _currentPath.Push(ActiveSelection.SelectedKey);
-        _activeSelections.Push(new ActiveSelection(GetOptions()));
         Filter = string.Empty;
+
+        _activeSelections.Push(new ActiveSelection(GetOptions()));
     }
     public void EnterKey(string key)
     {
