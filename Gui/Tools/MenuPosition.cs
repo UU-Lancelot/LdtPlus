@@ -89,6 +89,9 @@ public class MenuPosition
     public void FilterAdd(char c)
     {
         Filter += c;
+
+        ActiveSelection current = _activeSelections.Peek();
+        current.UpdateOptions(GetOptions());
     }
     public bool TryFilterRemoveLastChar()
     {
@@ -96,6 +99,9 @@ public class MenuPosition
             return false;
 
         Filter = Filter[..^1];
+
+        ActiveSelection current = _activeSelections.Peek();
+        current.UpdateOptions(GetOptions());
         return true;
     }
 
@@ -106,6 +112,7 @@ public class MenuPosition
         return SectionsFiltered
             .SelectMany(s => s.Submenu.Select(i => currentMenu.ItemOptions.Select(o => $"{i.Name}~{o.Name}").Prepend(i.Name).ToArray()))
             .Prepend(NavigationFiltered.Select(n => n.Name).ToArray())
+            .Where(s => s.Any())
             .ToArray();
     }
 }
