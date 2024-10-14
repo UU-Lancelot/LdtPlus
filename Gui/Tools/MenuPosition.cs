@@ -8,6 +8,7 @@ public class MenuPosition
         _menuRoot = menuRoot;
         _currentPath = new();
         _activeSelections = new();
+        Arguments = new();
         Filter = string.Empty;
 
         _activeSelections.Push(new ActiveSelection(GetOptions()));
@@ -20,6 +21,7 @@ public class MenuPosition
     public ActiveSelection ActiveSelection => _activeSelections.Peek();
 
     public IEnumerable<string> Path => _currentPath.Reverse();
+    public List<string> Arguments { get; }
     public string Filter { get; private set; }
     public IMenuContainer CurrentMenu
     {
@@ -52,9 +54,9 @@ public class MenuPosition
             .FirstOrDefault(pair => $"{pair.i.Name}~{pair.o.Name}" == ActiveSelection.SelectedKey)
             .o;
     public IEnumerable<MenuSection> SectionsFiltered => CurrentMenu.Sections
-        .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.StartsWith(Filter, ignoreCase: true, null))))
+        .Select(s => new MenuSection(s.Title, s.Submenu.Where(m => m.Name.SplitName().Any(n => n.StartsWith(Filter, ignoreCase: true, null)))))
         .Where(s => s.Submenu.Any());
-    public IEnumerable<IMenuItem> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.Name.StartsWith(Filter, ignoreCase: true, null));
+    public IEnumerable<IMenuItem> NavigationFiltered => CurrentMenu.Navigation.Where(n => n.Name.SplitName().Any(n => n.StartsWith(Filter, ignoreCase: true, null)));
 
     public void EnterSelected()
     {
@@ -84,6 +86,9 @@ public class MenuPosition
         Filter = string.Empty;
         _activeSelections.Pop();
 
+        if (CurrentMenu is MenuItemArea || CurrentMenu is MenuRoot)
+            Arguments.Clear();
+
         return true;
     }
 
@@ -105,7 +110,22 @@ public class MenuPosition
         current.UpdateOptions(GetOptions());
         return true;
     }
+    public void FilterClear()
+    {
+        Filter = string.Empty;
 
+        ActiveSelection current = _activeSelections.Peek();
+        current.UpdateOptions(GetOptions());
+    }
+
+    public string GenerateCommand()
+    {
+        string path = string.Join(" ", Path.Select(p => p.SimplifyName()));
+        string arguments = string.Join(" ", Arguments);
+        string[] parts = [path, arguments, Filter];
+
+        return string.Join(" ", parts.Where(s => !string.IsNullOrEmpty(s)));
+    }
 
     private string[][] GetOptions()
     {

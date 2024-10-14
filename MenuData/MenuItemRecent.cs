@@ -8,7 +8,7 @@ public record MenuItemRecent(
 {
     public string Description => string.Empty;
 
-    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
     {
         setCommand(Command.Run, Name);
     }

@@ -12,7 +12,7 @@ public record MenuItemArea
     public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
     public IEnumerable<IMenuItem> ItemOptions => Enumerable.Empty<IMenuItem>();
 
-    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
     {
         position.EnterSelected();
     }

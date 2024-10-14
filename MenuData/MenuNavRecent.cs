@@ -11,7 +11,7 @@ public record MenuNavRecent(
     public IEnumerable<IMenuItem> Navigation => [new MenuNavBack()];
     public IEnumerable<IMenuItem> ItemOptions => [new MenuOptionAdd()];
 
-    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
     {
         position.EnterSelected();
     }

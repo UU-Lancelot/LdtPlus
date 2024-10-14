@@ -75,7 +75,17 @@ public record ConfigData(
         {
             Name = row.Name,
             Description = row.Description,
-            Sections = row is MenuItemArea area ? area.Sections.Select(Create).ToList() : new(),
+            Sections = row is IMenuContainer container ? container.Sections.Select(Create).ToList() : [],
+            Type = row switch 
+            {
+                MenuItemArea => ConfigRawMenuType.Area,
+                MenuItemCommand => ConfigRawMenuType.Command,
+                MenuItemArgumentSelect => ConfigRawMenuType.ArgumentSelect,
+                MenuItemArgumentPath => ConfigRawMenuType.ArgumentPath,
+                MenuItemArgumentFlag => ConfigRawMenuType.ArgumentFlag,
+                MenuItemArgumentText => ConfigRawMenuType.ArgumentText,
+                _ => null,
+            },
         };
     }
     private ConfigRawFavourite Create(MenuItemFavourite favourite)
@@ -118,21 +128,50 @@ public record ConfigData(
     }
     private static IMenuRow ValidateAndCreate(ConfigRawMenu menu)
     {
-        // is area
-        if (menu.Sections.Any())
-        {
-            return new MenuItemArea(
-                Name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
-                Description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}"),
-                Sections: menu.Sections.Select(ValidateAndCreate).ToArray()
-            );
-        }
+        ConfigRawMenuType type = menu.GetMenuType();
 
-        // is command
-        return new MenuItemCommand(
-            Name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
-            Description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}")
-        );
+        switch (type)
+        {
+            case ConfigRawMenuType.Area:
+                return new MenuItemArea(
+                    Name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    Description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}"),
+                    Sections: menu.Sections.Select(ValidateAndCreate).ToArray()
+                );
+
+            case ConfigRawMenuType.Command:
+            default:
+                return new MenuItemCommand(
+                    Name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    Description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}"),
+                    ArgumentSections: menu.Sections.Select(ValidateAndCreate).ToArray()
+                );
+
+            case ConfigRawMenuType.ArgumentSelect:
+                return new MenuItemArgumentSelect(
+                    name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}"),
+                    values: menu.Sections.SelectMany(s => s.Submenu).Select(v => v.Name).Where(v => v is not null).Cast<string>().ToArray()
+                );
+
+            case ConfigRawMenuType.ArgumentPath:
+                return new MenuItemArgumentPath(
+                    name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}")
+                );
+
+            case ConfigRawMenuType.ArgumentFlag:
+                return new MenuItemArgumentFlag(
+                    name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}")
+                );
+            
+            case ConfigRawMenuType.ArgumentText:
+                return new MenuItemArgumentText(
+                    name: menu.Name ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Name)}"),
+                    description: menu.Description ?? throw new MissingMemberException($"{nameof(ConfigRawSection.Submenu)}.{nameof(ConfigRawMenu.Description)}")
+                );
+        }
     }
     private static MenuItemFavourite ValidateAndCreate(ConfigRawFavourite favourite)
     {

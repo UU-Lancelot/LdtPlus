@@ -20,7 +20,7 @@ await using (Gui gui = new())
     if (path is null)
     {
         string currentDir = Environment.CurrentDirectory;
-        PathInput pathMenu = new(gui, currentDir);
+        PathInput pathMenu = new(gui, currentDir, fileOnly: true);
         Command pathCommand = pathMenu.GetCommand(out string? pathParameter);
         switch (pathCommand)
         {

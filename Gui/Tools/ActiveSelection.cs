@@ -28,6 +28,13 @@ public class ActiveSelection
         UpdateKey();
     }
 
+    public void ResetPosition()
+    {
+        _selectedRow = 0;
+        _selectedColumn = 0;
+        UpdateKey();
+    }
+
     public void MoveUp()
     {
         _selectedRow = _selectedRow != 0

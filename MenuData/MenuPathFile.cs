@@ -10,7 +10,7 @@ public record MenuPathFile(
     public string Name => Path.GetFileName(FullPath) ?? FullPath;
     public string Description => string.Empty;
 
-    public void OnSelect(MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
     {
         setCommand(Command.Run, FullPath);
     }

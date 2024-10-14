@@ -29,7 +29,7 @@ public class ConfigBuilder
     private MenuSection[] ParseCommand(string command)
     {
         // run
-        string output = _executor.RunAndGetOutput(command);
+        string output = _executor.RunAndGetOutput($"{command} --help");
 
         // split into sections
         Regex sectionRegex = new(@$"{Environment.NewLine} (.+):{Environment.NewLine} --+{Environment.NewLine}");
@@ -75,20 +75,78 @@ public class ConfigBuilder
     private IMenuRow CreateFromLine(string name, string description, string command)
     {
         description = string.Join(" ", description.Split(Environment.NewLine).Select(l => l.Trim()));
+
+        string singleName = name.Split(',')[0];
+        string areaCommand = string.IsNullOrEmpty(command)
+            ? singleName
+            : $"{command} {singleName}";
+
+        // area
         if (description.StartsWith("[area]"))
         {
-            string areaCommand = string.IsNullOrEmpty(command)
-                ? name.Split(',')[0]
-                : $"{command} {name.Split(',')[0]}";
             MenuSection[] submenu = ParseCommand(areaCommand);
             return new MenuItemArea(name, description, submenu);
         }
 
-#warning TODO: arguments
+        // command
         if (description.StartsWith("[command]"))
-            return new MenuItemCommand(name, description);
+        {
+            MenuSection[] submenu = string.IsNullOrEmpty(command)
+                ? [] // top level command -> no submenu
+                : ParseCommand(areaCommand);
+            return new MenuItemCommand(name, description, submenu);
+        }
 
-        throw new NotSupportedException($"Unsupported line type: {description}");
+        // arguments
+        if (TryGetEnum(ref description, out string[] values))
+        {
+            TryGetDefault(ref description, out string? defaultValue);
+
+            return new MenuItemArgumentSelect(name, description, values, defaultValue);
+        }
+
+        if (description.Contains("path"))
+        {
+            return new MenuItemArgumentPath(name, description);
+        }
+
+        if (description.Contains("indicates"))
+        {
+            return new MenuItemArgumentFlag(name, description);
+        }
+
+        return new MenuItemArgumentText(name, description);
+    }
+
+    private bool TryGetEnum(ref string description, out string[] values)
+    {
+        if (!description.TryGetIndex("Valid values:", out int valuesIndex, out int valuesEndIndex))
+        {
+            values = Array.Empty<string>();
+            return false;
+        }
+
+        values = description.Cut(valuesEndIndex)
+            .Split(",")
+            .Select(v => v.Trim(' ', '.'))
+            .ToArray();
+        description = description.Cut(endIndex: valuesIndex).Trim();
+        return true;
+    }
+
+    private bool TryGetDefault(ref string description, out string? defaultValue)
+    {
+        defaultValue = null;
+
+        if (!description.StartsWith("(Default: "))
+            return false;
+
+        if (!description.TryGetIndex(")", out int defautIndex, out int defaultEndIndex))
+            return false;
+
+        defaultValue = description.Cut("(Default: ".Length, defautIndex);
+        description = description.Cut(defaultEndIndex).Trim();
+        return true;
     }
 
     public static ConfigData CreateConfig(string ldtPath)

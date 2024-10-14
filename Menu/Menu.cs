@@ -55,7 +55,7 @@ public class Menu
         if (_menuPosition.SelectedItem is null)
             return;
 
-        _menuPosition.SelectedItem.OnSelect(_menuPosition, SetResult);
+        _menuPosition.SelectedItem.OnSelect(_gui, _menuPosition, SetResult);
         ShowMenu();
     }
 
@@ -110,7 +110,7 @@ public class Menu
     protected virtual void ShowMenu()
     {
         _gui.Show(batch => batch
-            .ShowCommand($"{string.Join(" ", _menuPosition.Path.Select(p => p.Split(',')[0]))} {_menuPosition.Filter}")
+            .ShowCommand(_menuPosition.GenerateCommand())
             .ShowMenu(_menuPosition));
     }
 }

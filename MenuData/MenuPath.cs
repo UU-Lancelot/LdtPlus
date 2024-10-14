@@ -4,12 +4,18 @@ using LdtPlus.Gui.Tools;
 namespace LdtPlus.MenuData;
 public record MenuPath : IMenuContainer, IMenuRow
 {
-    public MenuPath(string fullPath)
+    public MenuPath(string fullPath, bool fileOnly)
     {
+        _fileOnly = fileOnly;
         FullPath = fullPath;
-        Navigation = [string.IsNullOrEmpty(fullPath) ? new MenuNavExit() : new MenuNavUpper()];
+        Navigation = string.IsNullOrEmpty(fullPath)
+            ? [new MenuNavExit()]
+            : fileOnly
+                ? [new MenuNavUpper()]
+                : [new MenuNavUpper(), new MenuNavOk(fullPath)];
     }
 
+    private readonly bool _fileOnly;
     public string FullPath { get; }
     public string Name => string.IsNullOrEmpty(Path.GetFileName(FullPath)) ? FullPath : Path.GetFileName(FullPath);
     public string Description => string.Empty;
@@ -29,7 +35,7 @@ public record MenuPath : IMenuContainer, IMenuRow
 
     private MenuSection[]? _sections;
 
-    public void OnSelect(MenuPosition position, Action<Menu.Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Menu.Command, string> setCommand)
     {
         position.EnterSelected();
     }
@@ -37,13 +43,13 @@ public record MenuPath : IMenuContainer, IMenuRow
     private MenuSection[] GetMenuSections(string fullPath)
     {
         if (string.IsNullOrEmpty(fullPath))
-            return [new("Directories", DriveInfo.GetDrives().Select(d => new MenuPath(d.Name)).Prepend(new MenuPath("~")))];
+            return [new("Directories", DriveInfo.GetDrives().Select(d => new MenuPath(d.Name, _fileOnly)).Prepend(new MenuPath("~", _fileOnly)))];
 
         if (fullPath == "~")
             fullPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
         return [
-            new MenuSection("Directories", Directory.GetDirectories(fullPath).Select(d => new MenuPath(d))),
+            new MenuSection("Directories", Directory.GetDirectories(fullPath).Select(d => new MenuPath(d, _fileOnly))),
             new MenuSection("Files", Directory.GetFiles(fullPath).Select(f => new MenuPathFile(f))),
         ];
     }

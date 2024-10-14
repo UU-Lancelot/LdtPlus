@@ -5,7 +5,7 @@ namespace LdtPlus.MenuData;
 public record MenuNavUpper : IMenuItem
 {
     public string Name => "..";
-    public void OnSelect(MenuPosition pos, Action<Command, string> setResult)
+    public void OnSelect(Gui.Gui gui, MenuPosition pos, Action<Command, string> setResult)
     {
         pos.TryExit();
     }

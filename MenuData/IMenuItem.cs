@@ -5,5 +5,5 @@ namespace LdtPlus.MenuData;
 public interface IMenuItem
 {
     string Name { get; }
-    void OnSelect(MenuPosition position, Action<Command, string> setCommand);
+    void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand);
 }

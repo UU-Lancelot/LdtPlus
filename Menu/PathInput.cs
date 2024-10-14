@@ -4,10 +4,13 @@ using LdtPlus.MenuData;
 namespace LdtPlus.Menu;
 public class PathInput : Menu
 {
-    public PathInput(Gui.Gui gui, string path)
-        : base(gui, CreateFromRoot(path))
+    public PathInput(Gui.Gui gui, string path, bool fileOnly)
+        : base(gui, CreateFromRoot(path, fileOnly))
     {
+        _fileOnly = fileOnly;
     }
+
+    private readonly bool _fileOnly;
 
     protected override void ShowMenu()
     {
@@ -18,12 +21,12 @@ public class PathInput : Menu
 
     public void RefreshMenu(string path)
     {
-        _menuPosition = CreateFromRoot(path);
+        _menuPosition = CreateFromRoot(path, _fileOnly);
     }
 
-    private static MenuPosition CreateFromRoot(string fullPath)
+    private static MenuPosition CreateFromRoot(string fullPath, bool fileOnly)
     {
-        MenuPath currentPath = new("");
+        MenuPath currentPath = new("", fileOnly);
         MenuPosition menuPosition = new(currentPath);
 
         string[] pathParts = SplitPath(fullPath);
