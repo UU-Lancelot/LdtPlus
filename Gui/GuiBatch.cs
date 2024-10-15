@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using LdtPlus.Gui.Interfaces;
 using LdtPlus.Gui.Tools;
 
@@ -15,7 +16,7 @@ public class GuiBatch
 
     public GuiBatch ShowCommand(string command)
     {
-        CommandComponent component = new(_guiBase, command);
+        CommandComponent component = new(command);
         _components.Add(component);
 
         return this;
@@ -23,7 +24,7 @@ public class GuiBatch
 
     public GuiBatch ShowInput(string message, string input)
     {
-        InputComponent component = new(_guiBase, message, input);
+        InputComponent component = new(message, input);
         _components.Add(component);
 
         return this;
@@ -31,7 +32,7 @@ public class GuiBatch
 
     public GuiBatch ShowPath(string path)
     {
-        PathComponent component = new(_guiBase, path);
+        PathComponent component = new(path);
         _components.Add(component);
 
         return this;
@@ -39,15 +40,23 @@ public class GuiBatch
 
     public GuiBatch ShowMenu(MenuPosition menu)
     {
-        MenuComponent component = new(_guiBase, menu);
+        MenuComponent component = new(menu);
         _components.Add(component);
 
         return this;
     }
 
-    public GuiBatch ShowStream(Stream stream)
+    public GuiBatch ShowStream(Stream streamOutput, Stream streamError)
     {
-        StreamComponent component = new(_guiBase, stream);
+        StreamComponent component = new(_guiBase, streamOutput, streamError);
+        _components.Add(component);
+
+        return this;
+    }
+
+    public GuiBatch ShowProcess(Process process)
+    {
+        ProcessComponent component = new(_guiBase, process);
         _components.Add(component);
 
         return this;

@@ -5,11 +5,10 @@ using Spectre.Console;
 using Spectre.Console.Rendering;
 
 namespace LdtPlus.Gui;
-internal class MenuComponent : IComponent, IDisposable
+internal class MenuComponent : IComponent
 {
-    public MenuComponent(IComponentContainer parent, MenuPosition menu, string? key = null)
+    public MenuComponent(MenuPosition menu, string? key = null)
     {
-        _parent = parent;
         _menu = menu;
         _mainFrame = new Table
         {
@@ -22,7 +21,6 @@ internal class MenuComponent : IComponent, IDisposable
         UpdateVisible();
     }
 
-    private readonly IComponentContainer _parent;
     private readonly MenuPosition _menu;
     private Table _mainFrame;
 
@@ -76,10 +74,5 @@ internal class MenuComponent : IComponent, IDisposable
             }
             _mainFrame.AddRow(sectionGrid);
         }
-    }
-
-    public void Dispose()
-    {
-        _parent.Remove(this);
     }
 }

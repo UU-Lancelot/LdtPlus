@@ -18,13 +18,17 @@ public class Executor
             process.StartInfo.Arguments = command;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.CreateNoWindow = true; //not diplay a windows
+            process.EnableRaisingEvents = true;
+
+            gui.Show(b => b
+                .ShowProcess(process));
 
             process.Start();
-            gui.Show(b => b
-                .ShowStream(process.StandardOutput.BaseStream)); //The output result
-                #warning TODO: Show error stream
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
             process.WaitForExit();
         }
     }

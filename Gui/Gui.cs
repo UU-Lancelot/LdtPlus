@@ -17,7 +17,7 @@ public class Gui : IDisposable, IAsyncDisposable
 
     public Gui Init()
     {
-        _guiBase.Update(new TitleComponent(_guiBase));
+        _guiBase.Update(new TitleComponent());
 
         if (_guiBase.IsRunning)
             _guiBase.Rerender();
@@ -57,6 +57,9 @@ public class Gui : IDisposable, IAsyncDisposable
         string[] keys = components.Select(c => c.Key).ToArray();
         foreach (IComponent componentToRemove in _showedComponents.Where(c => !keys.Contains(c.Key)))
         {
+            if (componentToRemove is IAsyncDisposable disposableComponent)
+                disposableComponent.DisposeAsync().AsTask().Wait();
+
             _guiBase.Remove(componentToRemove);
         }
 
