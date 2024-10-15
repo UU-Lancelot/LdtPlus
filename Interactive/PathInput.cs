@@ -4,18 +4,20 @@ using LdtPlus.Interactive.Tools;
 namespace LdtPlus.Interactive;
 public class PathInput : Menu
 {
-    public PathInput(Gui.Gui gui, string path, bool fileOnly)
+    public PathInput(Gui.Gui gui, string path, bool fileOnly, string title = "Path")
         : base(gui, CreateFromRoot(path, fileOnly))
     {
         _fileOnly = fileOnly;
+        _title = title;
     }
 
     private readonly bool _fileOnly;
+    private readonly string _title;
 
     protected override void ShowMenu()
     {
         _gui.Show(batch => batch
-            .ShowText($"Path: {string.Join("\\", _menuPosition.Path.Select(p => p.SimplifyName().Trim('\\')))}\\{_menuPosition.Filter}")
+            .ShowText($"{_title}: {string.Join("\\", _menuPosition.Path.Select(p => p.SimplifyName().Trim('\\')))}\\{_menuPosition.Filter}")
             .ShowMenu(_menuPosition));
     }
 
