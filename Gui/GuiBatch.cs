@@ -46,14 +46,6 @@ public class GuiBatch
         return this;
     }
 
-    public GuiBatch ShowStream(Stream streamOutput, Stream streamError)
-    {
-        StreamComponent component = new(_guiBase, streamOutput, streamError);
-        _components.Add(component);
-
-        return this;
-    }
-
     public GuiBatch ShowProcess(Process process)
     {
         ProcessComponent component = new(_guiBase, process);
