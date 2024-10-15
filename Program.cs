@@ -91,6 +91,10 @@ await using (Gui gui = new())
 
     if (parameter == "update")
     {
-#warning TODO: Update config
+        using (gui.UseLoader("Updating config..."))
+        {
+            config = ConfigBuilder.CreateConfig(path);
+            configIO.SaveConfig(config);
+        }
     }
 }
