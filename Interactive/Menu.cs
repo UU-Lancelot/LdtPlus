@@ -110,7 +110,7 @@ public class Menu
     protected virtual void ShowMenu()
     {
         _gui.Show(batch => batch
-            .ShowCommand(_menuPosition.GenerateCommand())
+            .ShowText($"Command: ldt {_menuPosition.GenerateCommand()}")
             .ShowMenu(_menuPosition));
     }
 }

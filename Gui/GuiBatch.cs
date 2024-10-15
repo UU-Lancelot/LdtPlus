@@ -14,25 +14,9 @@ public class GuiBatch
     private readonly GuiBase _guiBase;
     private List<IComponent> _components;
 
-    public GuiBatch ShowCommand(string command)
+    public GuiBatch ShowText(string text)
     {
-        CommandComponent component = new(command);
-        _components.Add(component);
-
-        return this;
-    }
-
-    public GuiBatch ShowInput(string message, string input)
-    {
-        InputComponent component = new(message, input);
-        _components.Add(component);
-
-        return this;
-    }
-
-    public GuiBatch ShowPath(string path)
-    {
-        PathComponent component = new(path);
+        LineComponent component = new(text);
         _components.Add(component);
 
         return this;

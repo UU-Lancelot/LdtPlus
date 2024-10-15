@@ -15,7 +15,7 @@ public class PathInput : Menu
     protected override void ShowMenu()
     {
         _gui.Show(batch => batch
-            .ShowPath($"{string.Join("\\", _menuPosition.Path.Select(p => p.Split(',')[0]))}\\{_menuPosition.Filter}")
+            .ShowText($"Path: {string.Join("\\", _menuPosition.Path.Select(p => p.SimplifyName().Trim('\\')))}\\{_menuPosition.Filter}")
             .ShowMenu(_menuPosition));
     }
 

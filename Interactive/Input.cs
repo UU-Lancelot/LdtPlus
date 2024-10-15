@@ -20,7 +20,7 @@ public class Input
     {
         do
         {
-            _gui.Show(b => b.ShowInput(message, _result));
+            _gui.Show(b => b.ShowText($"{message}: {_result}"));
             _input.WaitForInput(OnSelect, OnExit, onChar: OnChar, onBackspace: OnBackspace);
         }
         while (_isResultOk == null);
