@@ -45,7 +45,12 @@ public class ConfigIO
             return ldtPath;
 
         // PATH env
-        #warning TODO: implement PATH env search
+        string[] paths = Environment.GetEnvironmentVariable("PATH")?.Split(';') ?? [];
+        foreach (string path in paths)
+        {
+            if (DirContainsLdt(path, out ldtPath))
+                return ldtPath;
+        }
 
         return null;
     }
