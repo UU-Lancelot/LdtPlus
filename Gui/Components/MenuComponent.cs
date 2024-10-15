@@ -1,6 +1,6 @@
 using LdtPlus.Gui.Interfaces;
-using LdtPlus.Gui.Tools;
-using LdtPlus.MenuData;
+using LdtPlus.Interactive.Tools;
+using LdtPlus.Interactive.MenuData;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 

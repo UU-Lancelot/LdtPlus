@@ -1,7 +1,7 @@
 ﻿using LdtPlus;
 using LdtPlus.Config;
 using LdtPlus.Gui;
-using LdtPlus.Menu;
+using LdtPlus.Interactive;
 
 // Console.ReadKey(true);
 await using (Gui gui = new())

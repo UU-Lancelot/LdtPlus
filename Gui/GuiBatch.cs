@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using LdtPlus.Gui.Interfaces;
-using LdtPlus.Gui.Tools;
+using LdtPlus.Interactive.Tools;
 
 namespace LdtPlus.Gui;
 public class GuiBatch

@@ -1,5 +1,5 @@
 using LdtPlus.Config.RawData;
-using LdtPlus.MenuData;
+using LdtPlus.Interactive.MenuData;
 
 namespace LdtPlus.Config;
 public record ConfigData(

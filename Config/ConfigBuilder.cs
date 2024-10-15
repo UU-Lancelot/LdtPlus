@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using LdtPlus.MenuData;
+using LdtPlus.Interactive.MenuData;
 
 namespace LdtPlus.Config;
 public class ConfigBuilder
