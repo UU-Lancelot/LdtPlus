@@ -2,6 +2,7 @@
 using LdtPlus.Config;
 using LdtPlus.Gui;
 using LdtPlus.Interactive;
+using LdtPlus.Interactive.MenuResults;
 
 // Console.ReadKey(true);
 await using (Gui gui = new())
@@ -21,15 +22,11 @@ await using (Gui gui = new())
     {
         string currentDir = Environment.CurrentDirectory;
         PathInput pathMenu = new(gui, currentDir, fileOnly: true, title: "Path to LDT");
-        Command pathCommand = pathMenu.GetCommand(out string? pathParameter);
-        switch (pathCommand)
-        {
-            case Command.Exit:
-                return;
-            case Command.Run:
-                path = pathParameter;
-                break;
-        }
+        Result pathResult = pathMenu.GetCommand();
+        if (pathResult is ResultQuit)
+            return;
+        if (pathResult is ResultSelectPath selectedPathResult)
+            path = selectedPathResult.Path;
 
         // should not happen, just remove warning
         if (path is null)
@@ -49,49 +46,44 @@ await using (Gui gui = new())
 
     // menu
     Menu menu = new(gui, config.Menu);
-    Command command;
-    string? parameter;
+    Result result;
     do
     {
-        command = menu.GetCommand(out parameter);
-        switch (command)
+        result = menu.GetCommand();
+
+        // quit
+        if (result is ResultQuit)
+            return;
+        
+        // favourites
+        else if (result is ResultAddFavourite addFavourite)
         {
-            case Command.Exit:
-                return;
-            case Command.FavouriteAdd:
-                if (parameter is null || !Input.TryGetResult(gui, "Favourite name", out string? name))
-                    continue;
-
-                config.AddFavourite(name, parameter);
-                configIO.SaveConfig(config);
-                menu.RefreshMenu(config.Menu);
-                break;
-            case Command.FavouriteRename:
-                if (parameter is null || !Input.TryGetResult(gui, "New name", out string? newName))
-                    continue;
-
-                config.RenameFavourite(parameter, newName);
-                configIO.SaveConfig(config);
-                menu.RefreshMenu(config.Menu);
-                break;
-            case Command.FavouriteDelete:
-                if (parameter is null)
-                    continue;
-
-                config.DeleteFavourite(parameter);
-                configIO.SaveConfig(config);
-                menu.RefreshMenu(config.Menu);
-                break;
+            config.AddFavourite(addFavourite.Name, addFavourite.Command);
+            configIO.SaveConfig(config);
+            menu.RefreshMenu(config.Menu);
         }
-    } while (command != Command.Run || parameter is null);
-    config.AddRecent(parameter);
+        else if (result is ResultRenameFavourite renameFavourite)
+        {
+                config.RenameFavourite(renameFavourite.OldName, renameFavourite.NewName);
+                configIO.SaveConfig(config);
+                menu.RefreshMenu(config.Menu);
+        }
+        else if (result is ResultDeleteFavourite deleteFavourite)
+        {
+                config.DeleteFavourite(deleteFavourite.Name);
+                configIO.SaveConfig(config);
+                menu.RefreshMenu(config.Menu);
+        }
+    } while (result is not ResultRun);
+    ResultRun run = (ResultRun)result;
+    config.AddRecent(run.Command);
     configIO.SaveConfig(config);
 
     // run
     Executor executor = new(path);
-    executor.Run(gui, parameter);
+    executor.Run(gui, run.Command);
 
-    if (parameter == "update")
+    if (run.Command == "update")
     {
         using (gui.UseLoader("Updating config..."))
         {

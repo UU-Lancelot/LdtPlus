@@ -1,4 +1,5 @@
 using LdtPlus.Interactive.MenuData;
+using LdtPlus.Interactive.MenuResults;
 using LdtPlus.Interactive.Tools;
 
 namespace LdtPlus.Interactive;
@@ -20,9 +21,9 @@ public class Menu
     protected readonly Gui.Gui _gui;
     protected readonly InputHandler _input;
     protected MenuPosition _menuPosition;
-    protected (Command command, string? parameter)? _result;
+    protected Result? _result;
 
-    public Command GetCommand(out string? parameter)
+    public Result GetCommand()
     {
         // show
         ShowMenu();
@@ -34,14 +35,13 @@ public class Menu
         }
 
         // get result
-        parameter = _result.Value.parameter;
-        var resultCommand = _result.Value.command;
+        Result result = _result;
 
         // reset
         _result = null;
 
         // return
-        return resultCommand;
+        return result;
     }
 
     public void RefreshMenu(MenuRoot menu)
@@ -62,7 +62,7 @@ public class Menu
     private void OnExit()
     {
         if (!_menuPosition.TryExit())
-            SetResult(Command.Exit);
+            SetResult(new ResultQuit());
 
         ShowMenu();
     }
@@ -102,9 +102,9 @@ public class Menu
     }
     #endregion
 
-    private void SetResult(Command command, string? parameter = null)
+    private void SetResult(Result result)
     {
-        _result = (command, parameter);
+        _result = result;
     }
 
     protected virtual void ShowMenu()

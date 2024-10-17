@@ -1,3 +1,4 @@
+using LdtPlus.Interactive.MenuResults;
 using LdtPlus.Interactive.Tools;
 
 namespace LdtPlus.Interactive.MenuData;
@@ -12,7 +13,7 @@ public record MenuItemArgumentFlag : IMenuRow
     public string Name { get; }
     public string Description { get; }
 
-    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Result> setResult)
     {
         position.Arguments.Add(Name);
     }

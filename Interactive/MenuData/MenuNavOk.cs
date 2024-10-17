@@ -1,3 +1,4 @@
+using LdtPlus.Interactive.MenuResults;
 using LdtPlus.Interactive.Tools;
 
 namespace LdtPlus.Interactive.MenuData;
@@ -6,8 +7,8 @@ public record MenuNavOk(
 ) : IMenuItem
 {
     public string Name => "Ok";
-    public void OnSelect(Gui.Gui gui, MenuPosition pos, Action<Command, string> setResult)
+    public void OnSelect(Gui.Gui gui, MenuPosition pos, Action<Result> setResult)
     {
-        setResult(Command.Run, Path);
+        setResult(new ResultSelectPath(Path));
     }
 }

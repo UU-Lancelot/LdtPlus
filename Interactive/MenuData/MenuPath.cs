@@ -1,4 +1,5 @@
 
+using LdtPlus.Interactive.MenuResults;
 using LdtPlus.Interactive.Tools;
 
 namespace LdtPlus.Interactive.MenuData;
@@ -35,7 +36,7 @@ public record MenuPath : IMenuContainer, IMenuRow
 
     private MenuSection[]? _sections;
 
-    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Command, string> setCommand)
+    public void OnSelect(Gui.Gui gui, MenuPosition position, Action<Result> setResult)
     {
         position.EnterSelected();
     }
