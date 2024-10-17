@@ -1,3 +1,4 @@
+using LdtPlus.Config;
 using LdtPlus.Gui.Interfaces;
 
 namespace LdtPlus.Gui;
@@ -19,6 +20,15 @@ public class Gui : IDisposable, IAsyncDisposable
     {
         _guiBase.Update(new TitleComponent());
 
+        if (_guiBase.IsRunning)
+            _guiBase.Rerender();
+
+        return this;
+    }
+
+    public Gui AddSubtitle(ConfigData config)
+    {
+        _guiBase.Update(new SubTitleComponent(config.LdtBookkitUrl));
         if (_guiBase.IsRunning)
             _guiBase.Rerender();
 

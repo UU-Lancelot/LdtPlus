@@ -44,6 +44,8 @@ await using (Gui gui = new())
             configIO.SaveConfig(config);
         }
     }
+    
+    gui.AddSubtitle(config);
 
     // menu
     Menu menu = new(gui, config.Menu);
