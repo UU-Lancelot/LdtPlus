@@ -32,14 +32,20 @@ internal class ProcessComponent : IComponent
 
     public void OnOutput(object sender, DataReceivedEventArgs e)
     {
-        _text += e.Data;
+        if (e.Data is null)
+            return;
+
+        _text += $"{e.Data}{Environment.NewLine}";
         _parent.Update(this);
         _parent.Rerender();
     }
 
     public void OnError(object sender, DataReceivedEventArgs e)
     {
-        _text += e.Data;
+        if (e.Data is null)
+            return;
+
+        _text += $"{e.Data}{Environment.NewLine}";
         _parent.Update(this);
         _parent.Rerender();
     }
